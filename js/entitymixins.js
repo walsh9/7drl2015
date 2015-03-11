@@ -10,7 +10,7 @@ Game.EntityMixins.PlayerActor = {
             return;
         }
         this._acting = true;
-        this.addTurnHunger();
+        // this.addTurnHunger();
         // Detect if the game is over
         if (!this.isAlive()) {
             Game.Screen.playScreen.setGameEnded(true);
@@ -25,43 +25,6 @@ Game.EntityMixins.PlayerActor = {
         // Clear the message queue
         this.clearMessages();
         this._acting = false;
-    }
-};
-
-Game.EntityMixins.FungusActor = {
-    name: 'FungusActor',
-    groupName: 'Actor',
-    init: function() {
-        this._growthsRemaining = 5;
-    },
-    act: function() { 
-        // Check if we are going to try growing this turn
-        if (this._growthsRemaining > 0) {
-            if (Math.random() <= 0.02) {
-                // Generate the coordinates of a random adjacent square by
-                // generating an offset between [-1, 0, 1] for both the x and
-                // y directions. To do this, we generate a number from 0-2 and then
-                // subtract 1.
-                var xOffset = Math.floor(Math.random() * 3) - 1;
-                var yOffset = Math.floor(Math.random() * 3) - 1;
-                // Make sure we aren't trying to spawn on the same tile as us
-                if (xOffset != 0 || yOffset != 0) {
-                    // Check if we can actually spawn at that location, and if so
-                    // then we grow!
-                    if (this.getMap().isEmptyFloor(this.getX() + xOffset,
-                                                   this.getY() + yOffset)) {
-                        var entity = Game.EntityRepository.create('fungus');
-                        entity.setPosition(this.getX() + xOffset, this.getY() + yOffset);
-                        this.getMap().addEntity(entity);
-                        this._growthsRemaining--;
-                        // Send a message nearby!
-                        Game.sendMessageNearby(this.getMap(),
-                            entity.getX(), entity.getY(),
-                            'The fungus is spreading!');
-                    }
-                }
-            }
-        }
     }
 };
 
@@ -135,60 +98,6 @@ Game.EntityMixins.TaskActor = {
         }
     }
 };
-
-Game.EntityMixins.GiantZombieActor = Game.extend(Game.EntityMixins.TaskActor, {
-    init: function(template) {
-        // Call the task actor init with the right tasks.
-        Game.EntityMixins.TaskActor.init.call(this, Game.extend(template, {
-            'tasks' : ['growArm', 'spawnSlime', 'hunt', 'wander']
-        }));
-        // We only want to grow the arm once.
-        this._hasGrownArm = false;
-    },
-    canDoTask: function(task) {
-        // If we haven't already grown arm and HP <= 20, then we can grow.
-        if (task === 'growArm') {
-            return this.getHp() <= 20 && !this._hasGrownArm;
-        // Spawn a slime only a 10% of turns.
-        } else if (task === 'spawnSlime') {
-            return Math.round(Math.random() * 100) <= 10;
-        // Call parent canDoTask
-        } else {
-            return Game.EntityMixins.TaskActor.canDoTask.call(this, task);
-        }
-    },
-    growArm: function() {
-        this._hasGrownArm = true;
-        this.increaseAttackValue(5);
-        // Send a message saying the zombie grew an arm.
-        Game.sendMessageNearby(this.getMap(),
-            this.getX(), this.getY(), 
-            'An extra arm appears on the giant zombie!');
-    },
-    spawnSlime: function() {
-        // Generate a random position nearby.
-        var xOffset = Math.floor(Math.random() * 3) - 1;
-        var yOffset = Math.floor(Math.random() * 3) - 1;
-
-        // Check if we can spawn an entity at that position.
-        if (!this.getMap().isEmptyFloor(this.getX() + xOffset, this.getY() + yOffset)) {
-            // If we cant, do nothing
-            return;
-        }
-        // Create the entity
-        var slime = Game.EntityRepository.create('slime');
-        slime.setX(this.getX() + xOffset);
-        slime.setY(this.getY() + yOffset);
-        this.getMap().addEntity(slime);
-    },
-    listeners: {
-        onDeath: function(attacker) {
-            // Switch to win screen when killed!
-            Game.switchScreen(Game.Screen.winScreen);
-        }
-    }
-});
-
 
 // This signifies our entity can attack basic destructible enities
 Game.EntityMixins.Attacker = {
@@ -410,122 +319,38 @@ Game.sendMessageNearby = function(map, centerX, centerY, message, args) {
     }
 };
 
-Game.EntityMixins.InventoryHolder = {
-    name: 'InventoryHolder',
+Game.EntityMixins.Pious = {
+    name: 'Pious',
     init: function(template) {
-        // Default to 10 inventory slots.
-        var inventorySlots = template['inventorySlots'] || 10;
-        // Set up an empty inventory.
-        this._items = new Array(inventorySlots);
+        this._favor = template['maxFavor'] || 3;
+        this._blessingSlots = template['blessingSlots'] || 9;
+        this._blessings = [];
     },
-    getItems: function() {
-        return this._items;
+    getFavor: function() {
+        return this._favor;
     },
-    getItem: function(i) {
-        return this._items[i];
+    setFavor: function(n) {
+        this._favor = n;
     },
-    addItem: function(item) {
-        // Try to find a slot, returning true only if we could add the item.
-        for (var i = 0; i < this._items.length; i++) {
-            if (!this._items[i]) {
-                this._items[i] = item;
-                return true;
-            }
-        }
-        return false;
+    getBlessings: function() {
+        return this._blessings;
     },
-    removeItem: function(i) {
-        // If we can equip items, then make sure we unequip the item we are removing.
-        if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper)) {
-            this.unequip(this._items[i]);
-        }
-        // Simply clear the inventory slot.
-        this._items[i] = null;
+    getBlessing: function(i) {
+        return this._blessings[i];
     },
-    canAddItem: function() {
-        // Check if we have an empty slot.
-        for (var i = 0; i < this._items.length; i++) {
-            if (!this._items[i]) {
-                return true;
-            }
-        }
-        return false;
+    addBlessing: function(b) {
+        // Try to find a slot, returning true only if we could add the blesing.
+        if (this._blessings.length < this._blessingSlots) {
+            this._blessings.push(b)
+            return true;
+        }        return false;
     },
-    pickupItems: function(indices) {
-        // Allows the user to pick up items from the map, where indices is
-        // the indices for the array returned by map.getItemsAt
-        var mapItems = this._map.getItemsAt(this.getX(), this.getY());
-        var added = 0;
-        // Iterate through all indices.
-        for (var i = 0; i < indices.length; i++) {
-            // Try to add the item. If our inventory is not full, then splice the 
-            // item out of the list of items. In order to fetch the right item, we
-            // have to offset the number of items already added.
-            if (this.addItem(mapItems[indices[i]  - added])) {
-                mapItems.splice(indices[i] - added, 1);
-                added++;
-            } else {
-                // Inventory is full
-                break;
-            }
-        }
-        // Update the map items
-        this._map.setItemsAt(this.getX(), this.getY(), mapItems);
-        // Return true only if we added all items
-        return added === indices.length;
+    removeBlessing: function(i) {
+        this._blessings.splice(0, 1);
     },
-    dropItem: function(i) {
-        // Drops an item to the current map tile
-        if (this._items[i]) {
-            if (this._map) {
-                this._map.addItem(this.getX(), this.getY(), this._items[i]);
-            }
-            this.removeItem(i);      
-        }
-    }
-};
-
-Game.EntityMixins.FoodConsumer = {
-    name: 'FoodConsumer',
-    init: function(template) {
-        this._maxFullness = template['maxFullness'] || 1000;
-        // Start halfway to max fullness if no default value
-        this._fullness = template['fullness'] || (this._maxFullness / 2);
-        // Number of points to decrease fullness by every turn.
-        this._fullnessDepletionRate = template['fullnessDepletionRate'] || 1;
+    canAddBlessing: function() {
+        return this._blessings.length < this._blessingSlots;
     },
-    addTurnHunger: function() {
-        // Remove the standard depletion points
-        this.modifyFullnessBy(-this._fullnessDepletionRate);
-    },
-    modifyFullnessBy: function(points) {
-        this._fullness = this._fullness + points;
-        if (this._fullness <= 0) {
-            this.kill("You have died of starvation!");
-        } else if (this._fullness > this._maxFullness) {
-            this.kill("You choke and die!");
-        }
-    },
-    getHungerState: function() {
-        // Fullness points per percent of max fullness
-        var perPercent = this._maxFullness / 100;
-        // 5% of max fullness or less = starving
-        if (this._fullness <= perPercent * 5) {
-            return 'Starving';
-        // 25% of max fullness or less = hungry
-        } else if (this._fullness <= perPercent * 25) {
-            return 'Hungry';
-        // 95% of max fullness or more = oversatiated
-        } else if (this._fullness >= perPercent * 95) {
-            return 'Oversatiated';
-        // 75% of max fullness or more = full
-        } else if (this._fullness >= perPercent * 75) {
-            return 'Full';
-        // Anything else = not hungry
-        } else {
-            return 'Not Hungry';
-        }
-    }
 };
 
 Game.EntityMixins.CorpseDropper = {
@@ -536,162 +361,11 @@ Game.EntityMixins.CorpseDropper = {
     },
     listeners: {
         onDeath: function(attacker) {
-            // Check if we should drop a corpse.
+            // Check if we leave drop a corpse.
             if (Math.round(Math.random() * 100) <= this._corpseDropRate) {
-                // Create a new corpse item and drop it.
+                // Draw a corpse tile.
                 this._map.setTile(this.getX(), this.getY(), Game.Tile.corpseTile);
             }    
-        }
-    }
-};
-
-Game.EntityMixins.Equipper = {
-    name: 'Equipper',
-    init: function(template) {
-        this._weapon = null;
-        this._armor = null;
-    },
-    wield: function(item) {
-        this._weapon = item;
-    },
-    unwield: function() {
-        this._weapon = null;
-    },
-    wear: function(item) {
-        this._armor = item;
-    },
-    takeOff: function() {
-        this._armor = null;
-    },
-    getWeapon: function() {
-        return this._weapon;
-    },
-    getArmor: function() {
-        return this._armor;
-    },
-    unequip: function(item) {
-        // Helper function to be called before getting rid of an item.
-        if (this._weapon === item) {
-            this.unwield();
-        }
-        if (this._armor === item) {
-            this.takeOff();
-        }
-    }
-};
-
-Game.EntityMixins.ExperienceGainer = {
-    name: 'ExperienceGainer',
-    init: function(template) {
-        this._level = template['level'] || 1;
-        this._experience = template['experience'] || 0;
-        this._statPointsPerLevel = template['statPointsPerLevel'] || 1;
-        this._statPoints = 0;
-        // Determine what stats can be levelled up.
-        this._statOptions = [];
-        if (this.hasMixin('Attacker')) {
-            this._statOptions.push(['Increase attack value', this.increaseAttackValue]);
-        }
-        if (this.hasMixin('Destructible')) {
-            this._statOptions.push(['Increase defense value', this.increaseDefenseValue]);   
-            this._statOptions.push(['Increase max health', this.increaseMaxHp]);
-        }
-        if (this.hasMixin('Sight')) {
-            this._statOptions.push(['Increase sight range', this.increaseSightRadius]);
-        }
-    },
-    getLevel: function() {
-        return this._level;
-    },
-    getExperience: function() {
-        return this._experience;
-    },
-    getNextLevelExperience: function() {
-        return (this._level * this._level) * 10;
-    },
-    getStatPoints: function() {
-        return this._statPoints;
-    },
-    setStatPoints: function(statPoints) {
-        this._statPoints = statPoints;
-    },
-    getStatOptions: function() {
-        return this._statOptions;
-    },
-    giveExperience: function(points) {
-        var statPointsGained = 0;
-        var levelsGained = 0;
-        // Loop until we've allocated all points.
-        while (points > 0) {
-            // Check if adding in the points will surpass the level threshold.
-            if (this._experience + points >= this.getNextLevelExperience()) {
-                // Fill our experience till the next threshold.
-                var usedPoints = this.getNextLevelExperience() - this._experience;
-                points -= usedPoints;
-                this._experience += usedPoints;
-                // Level up our entity!
-                this._level++;
-                levelsGained++;
-                this._statPoints += this._statPointsPerLevel;
-                statPointsGained += this._statPointsPerLevel;
-            } else {
-                // Simple case - just give the experience.
-                this._experience += points;
-                points = 0;
-            }
-        }
-        // Check if we gained at least one level.
-        if (levelsGained > 0) {
-            Game.sendMessage(this, "You advance to level %d.", [this._level]);
-            this.raiseEvent('onGainLevel');
-        }
-    },
-    listeners: {
-        onKill: function(victim) {
-            var exp = victim.getMaxHp() + victim.getDefenseValue();
-            if (victim.hasMixin('Attacker')) {
-                exp += victim.getAttackValue();
-            }
-            // Account for level differences
-            if (victim.hasMixin('ExperienceGainer')) {
-                exp -= (this.getLevel() - victim.getLevel()) * 3;
-            }
-            // Only give experience if more than 0.
-            if (exp > 0) {
-                this.giveExperience(exp);
-            }
-        },
-        details: function() {
-            return [{key: 'level', value: this.getLevel()}];
-        }
-    }
-};
-
-Game.EntityMixins.RandomStatGainer = {
-    name: 'RandomStatGainer',
-    groupName: 'StatGainer',
-    listeners: {
-        onGainLevel: function() {
-            var statOptions = this.getStatOptions();
-            // Randomly select a stat option and execute the callback for each
-            // stat point.
-            while (this.getStatPoints() > 0) {
-                // Call the stat increasing function with this as the context.
-                statOptions.random()[1].call(this);
-                this.setStatPoints(this.getStatPoints() - 1);
-            }
-        }
-    }
-};
-
-Game.EntityMixins.PlayerStatGainer = {
-    name: 'PlayerStatGainer',
-    groupName: 'StatGainer',
-    listeners: {
-        onGainLevel: function() {
-            // Setup the gain stat screen and show it.
-            Game.Screen.gainStatScreen.setup(this);
-            Game.Screen.playScreen.setSubScreen(Game.Screen.gainStatScreen);
         }
     }
 };

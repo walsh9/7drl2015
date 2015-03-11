@@ -5,6 +5,8 @@ Game.Tile = function(properties) {
     this._blocksLight = (properties['blocksLight'] !== undefined) ? 
         properties['blocksLight'] : true;
     this._description = properties['description'] || '';
+    this._action = properties['action'] || undefined;
+    this._bumpable = (properties['action'] != undefined);
 };
 Game.Tile.extend(Game.Glyph);
 
@@ -15,17 +17,25 @@ Game.Tile.prototype.isWalkable = function() {
 Game.Tile.prototype.isBlockingLight = function() {
     return this._blocksLight;
 };
+Game.Tile.prototype.isBumpable= function() {
+    return this._bumpable;
+};
 Game.Tile.prototype.getDescription = function() {
     return this._description;
 };
+Game.Tile.prototype.getAction = function() {
+    return this._action;
+};
 
 Game.Tile.nullTile = new Game.Tile({description: '(unknown)'});
+
 Game.Tile.floorTile = new Game.Tile({
     character: '.',
     walkable: true,
     blocksLight: false,
     description: 'A smooth tiled floor'
 });
+
 Game.Tile.wallTile = new Game.Tile({
     character: '#',
     foreground: 'green',
@@ -34,11 +44,17 @@ Game.Tile.wallTile = new Game.Tile({
 
 Game.Tile.stairsDownTile = new Game.Tile({
     character: '>',
-    foreground: 'green',
-    walkable: true,
+    foreground: 'lightgreen',
+    walkable: false,
     blocksLight: false,
-    description: 'A marble staircase leading downwards'
+    description: 'A marble staircase leading downwards',
+    action: function() {
+        var nextLevel = Game._currentScreen._level + 1;
+        Game._currentScreen._level++;
+        Game._currentScreen.newLevel(nextLevel);
+    }
 });
+
 Game.Tile.waterTile = new Game.Tile({
     character: '~',
     foreground: 'blue',

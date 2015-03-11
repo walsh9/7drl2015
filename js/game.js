@@ -1,13 +1,15 @@
 var Game =  {
 	_display: null,
     _currentScreen: null,
-    _screenWidth: 80,
+    _screenWidth: 60,
     _screenHeight: 24,
 	init: function() {
         // Any necessary initialization will go here.
         var options = {
-            width: this._screenWidth,
-            height: this._screenHeight + 1,
+            width: this._screenWidth + 20,
+            height: this._screenHeight,
+            fontSize: 16,
+            fontFamily: '"Droid Sans Mono", monospace',
         }
 
         this._display = new ROT.Display(options);

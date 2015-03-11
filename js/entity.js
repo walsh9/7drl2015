@@ -73,7 +73,10 @@ Game.Entity.prototype.tryMove = function(x, y, map) {
         // Update the entity's position
         this.setPosition(x, y);
         return true;
-    } 
+    } else if (this.hasMixin(Game.EntityMixins.PlayerActor) && tile.isBumpable()) {
+        var action = tile.getAction();
+        action.call();
+    }
     return false;
 };
 Game.Entity.prototype.isAlive = function() {

@@ -8,5 +8,7 @@ Game.Map.Citadel = function(tiles, player) {
         // Add a random entity
         this.addEntityAtRandomPosition(entity);
     }
+    var stairPosition = this.getRandomFloorPosition();
+    this._tiles.set(stairPosition.x, stairPosition.y,  Game.Tile.stairsDownTile);
 };
 Game.Map.Citadel.extend(Game.Map);
