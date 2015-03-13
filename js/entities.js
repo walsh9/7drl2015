@@ -3,7 +3,7 @@ Game.PlayerTemplate = {
     name: 'human (you)',
     character: '@',
     foreground: 'white',
-    maxHp: 40,
+    maxHp: 10,
     maxFavor: 3,
     attackValue: 2,
     sightRadius: 6,

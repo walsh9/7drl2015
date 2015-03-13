@@ -104,6 +104,7 @@ Game.EntityMixins.BuffGetter = {
     init: function(template) {
         this._attackBuffs = [];
         this._defenseBuffs = [];
+        this._abilities = [];
     },
     addAttackBuff: function(amount, duration, name, unique) {
         for (var i=0; i < this._attackBuffs.length; i++) {
@@ -115,12 +116,12 @@ Game.EntityMixins.BuffGetter = {
         return true;
     },
     addDefenseBuff: function(amount, duration, name, unique) {
-        for (var i=0; i < this._attackBuffs.length; i++) {
-            if (unique && this._attackBuffs[i].name === name) {
+        for (var i=0; i < this._defenseBuffs.length; i++) {
+            if (unique && this._defenseBuffs[i].name === name) {
                 return false;
             }
         }
-        this._attackBuffs.push({amount: amount,  /* # of attacks */ duration: duration, name: name, unique: unique});
+        this._defenseBuffs.push({amount: amount,  /* # of attacks */ duration: duration, name: name, unique: unique});
         return true;
     },
     getAttackBuffs: function(){
@@ -138,7 +139,7 @@ Game.EntityMixins.BuffGetter = {
         while (i--) {
             this._attackBuffs[i].duration -= 1;
             if (this._attackBuffs[i].duration === 0) {
-                this._attackbuffs.splice(i, 1);
+                this._attackBuffs.splice(i, 1);
             };
         };
     },
@@ -179,6 +180,22 @@ Game.EntityMixins.BuffGetter = {
         }
         return false;
     },
+    getAbilities: function(name) {
+        return this._abilities;
+    },
+    addAbility: function(name) {
+        if (!this.hasAbility(name)) {
+            this._abilities.push(name);
+        }
+    },
+    removeAbility: function(name) {
+        if (this.hasAbility(name)) {
+            this._abilities.splice(this._abilities.indexOf(name));
+        }
+    },
+    hasAbility: function(name) {
+        return (this._abilities.indexOf(name) > -1);
+    },
 }
 
 // This signifies our entity can attack basic destructible enities
@@ -204,7 +221,7 @@ Game.EntityMixins.Attacker = {
         if (target.hasMixin('Destructible')) {
             var attack = this.getAttackValue();
             var defense = target.getDefenseValue();
-            var damage = attack - defense;
+            var damage = Math.max(attack - defense, 0);
 
             Game.sendMessage(this, 'You strike the %s for %d damage!', 
                 [target.getName(), damage]);
@@ -212,6 +229,9 @@ Game.EntityMixins.Attacker = {
                 [this.getName(), damage]);
 
             target.takeDamage(this, damage);
+            if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
+                this.decrementAttackBuffDuration();
+            }
         }
     },
     listeners: {
@@ -410,6 +430,9 @@ Game.EntityMixins.Pious = {
     setFavor: function(n) {
         this._favor = n;
     },
+    getBlessingSlotCount: function() {
+        return this._blessingSlots;
+    },
     getBlessings: function() {
         return this._blessings;
     },
@@ -433,10 +456,10 @@ Game.EntityMixins.Pious = {
         var blessing = this._blessings[n - 1];
         if (this._favor >= blessing.favorCost) {
             this._favor -= blessing.favorCost;
+            this.removeBlessing(n - 1);
             console.log(blessing);
             Game.sendMessage(this, blessing.message);
             blessing.action(this);
-            this.removeBlessing(n - 1);
         } else
         Game.sendMessage(this, "You don't have enough favor. Ascend the citadel to gain more.");        
     }

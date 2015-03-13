@@ -36,7 +36,9 @@ Game.Screen.playScreen = {
     exit: function() { console.log("Exited play screen."); },
     newLevel: function(level) {
         this._player.setFavor(3);
-        for (var i = 0; i < 3; i++) {
+        this._player.setHp(this._player.getMaxHp());
+        this._player.removeAbility('telepathy');
+        for (var i = 0; i < 4; i++) {
             if (this._player.canAddBlessing) {
                 var blessing = Game.BlessingRepository.createRandom();
                 this._player.addBlessing(blessing);
@@ -80,37 +82,58 @@ Game.Screen.playScreen = {
         }    
     },
     renderStatus: function(display) {
+        var player = this._player
         var screenWidth = Game.getScreenWidth();
         var screenHeight = Game.getScreenHeight();
-        var blessings = this._player.getBlessings();
+        var blessings = player.getBlessings();
 
         var headColors = '%c{green}%b{black}';
         var statColors = '%c{white}%b{black}';
+        var healthColors = '%c{red}%b{black}';
+        var grayColors = '%c{gray}%b{black}';
         var drawStatus = function (y, text) {
             display.drawText(screenWidth + 1, y, text);
         }
 
         var locationLine = headColors + 'Sunken Citadel'
-        var levelLine = statColors + 'Level: ' + this._level; 
-        var hpLine = statColors + vsprintf('HP: %d/%d', 
-            [this._player.getHp(), this._player.getMaxHp()]);
-        var favorLine = statColors + 'Favor: ' + Array(this._player.getFavor() + 1).join('* ');
-        var attackLine = statColors + 'Attack:' + this._player.getBaseAttackValue();
-        var attackBuff = this._player.getAttackBuffTotal();
+        var levelLine = statColors + 'Level: ' + this._level;
+        var hpLine = statColors + 'HP:' +
+            healthColors + Array(player.getHp() + 1).join('+') +
+            grayColors + Array(player.getMaxHp() - player.getHp() + 1).join('-');
+        var favorLine = statColors + 'Favor: ' + Array(player.getFavor() + 1).join('* ');
+        var attackLine = statColors + 'Attack:' + player.getBaseAttackValue();
+        var attackBuff = player.getAttackBuffTotal();
         attackLine += '(' + attackBuff + ')';
 
+        s++;
         var blessingsHeader = headColors + '[B]lessings';
+        var enemyHeader = headColors + '[E]nemies';
+        var s = 0;
+        drawStatus(s++, locationLine);
+        drawStatus(s++, levelLine);
+        drawStatus(s++, hpLine);
+        drawStatus(s++, favorLine);
+        drawStatus(s++, attackLine);
 
-        drawStatus(0, locationLine);
-        drawStatus(1, levelLine);
-        drawStatus(2, hpLine);
-        drawStatus(3, favorLine);
-        drawStatus(4, attackLine);
+        s++;
+        drawStatus(s++, blessingsHeader);
+        for (var i = 0; i < player.getBlessingSlotCount(); i++) {
+            var blessingStatus = statColors + '[' + (i + 1) + '] ';
+            if (i < blessings.length) {
+                blessingStatus += blessings[i].name
+            }
+            drawStatus(s++, blessingStatus);
+        }
 
-        drawStatus(6, blessingsHeader);
-
-        for (var i = 0; i < blessings.length; i++) {
-            drawStatus(i + 8, statColors + '[' + (i + 1) + '] ' + blessings[i].name);
+        s++;
+        drawStatus(s++, enemyHeader);
+        var enemies = this._player.getVisibleTargets();
+        for (var j = 0; j < enemies.length; j++) {
+            var enemy = enemies[j];
+            drawStatus(s++, statColors + enemy.getName());
+            drawStatus(s++, statColors + 'HP:' + 
+                healthColors + Array(enemy.getHp() + 1).join('+') +
+                grayColors + Array(enemy.getMaxHp() - enemy.getHp() + 1).join('-'));
         }
 
 
@@ -153,7 +176,7 @@ Game.Screen.playScreen = {
         // Render the explored map cells
         for (var x = topLeftX; x < topLeftX + screenWidth; x++) {
             for (var y = topLeftY; y < topLeftY + screenHeight; y++) {
-                if (map.isExplored(x, y)) {
+                if (map.isExplored(x, y) || (this._player.hasAbility('telepathy') && map.getEntityAt(x, y))) {
                     // Fetch the glyph for the tile and render it to the screen
                     // at the offset position.
                     var glyph = map.getTile(x, y);
@@ -167,6 +190,10 @@ Game.Screen.playScreen = {
                         }
                         // Update the foreground color in case our glyph changed
                         foreground = glyph.getForeground();
+                    } else if (this._player.hasAbility('telepathy')) {
+                        if (map.getEntityAt(x, y)) {
+                            glyph = map.getEntityAt(x, y);
+                        }
                     } else {
                         // Since the tile was previously explored but is not 
                         // visible, we want to change the foreground color to

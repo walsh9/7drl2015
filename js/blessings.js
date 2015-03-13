@@ -10,6 +10,15 @@ Game.BlessingRepository.define("Water Sword", {
     }
 });
 
+Game.BlessingRepository.define("Dolphin Tears", {
+    name: "Dolphin Tears",
+    description: "Heal 3 HP",    
+    message: "You feel warm.",
+    action: function(player) {
+        player.setHp(Math.min(player.getHp() + 3, player.getMaxHp()));
+    }
+});
+
 Game.BlessingRepository.define("Ocean's Wrath", {
     name: "Ocean's Wrath",
     description: "Deal 1 damage to all enemies in line of sight",    
@@ -24,6 +33,7 @@ Game.BlessingRepository.define("Ocean's Wrath", {
             Game.sendMessage(player, 'You blast the %s for %s damage!', [target.getName(), damage]);
             target.takeDamage(player, damage);
         }
+        player.decrementAttackBuffDuration();
     }
 });
 
@@ -41,20 +51,26 @@ Game.BlessingRepository.define("Ocean's Bounty", {
     }
 });
 
-Game.BlessingRepository.define("Leech", {
-    name: "Leech",
-    description: "An enduring -1 penalty to all damage dealt. Heal for each damage dealt.",    
-    message: "You feel voraciaous.",    
+Game.BlessingRepository.define("Strike", {
+    name: "Strike",
+    description: "Your next attack does +3 damage",    
+    message: "Your hair stands on end.",    
+    action: function (player) {
+        player.addAttackBuff(3, 1, 'Strike', false) 
+    }
 });
 
 Game.BlessingRepository.define("Ebb and Flow", {
     name: "Ebb and Flow",
     description: "Detect enemies on this floor.",    
-    message: "You can feel subtle perturbations in the currents.",    
+    message: "You can feel subtle perturbations in the currents.",
+    action: function (player) {
+        player.addAbility('telepathy');
+    }    
 });
 
-Game.BlessingRepository.define("Resolute Tide", {
-    name: "Resolute Tide",
+Game.BlessingRepository.define("Guiding Tide", {
+    name: "Guiding Tide",
     description: "The way forward will be revealed.",    
     message: "Water is flowing towards the Jewel of Zot",
     action: function(player) {
@@ -73,8 +89,52 @@ Game.BlessingRepository.define("Resolute Tide", {
                map.setTile(x, y, Game.Tile.glowingFloorTile);
             }
         });
-        console.log(player);
-        console.log(stairs);
     }
 });
+
+Game.BlessingRepository.define("Bubble Shield", {
+    name: "Bubble Shield",
+    description: "Block the next 3 attacks.",    
+    message: "You are enveloped by a bubble.",
+    action: function(player) {
+        player.addDefenseBuff(10, 3, 'Bubble shield', false) 
+    }
+});
+
+Game.BlessingRepository.define("Swift Step", {
+    name: "Swift Step",
+    description: "Gain 5 free turns",    
+    message: "",
+    action: function(player) {
+        player.setSpeed(5000);   //not done     
+    }
+});
+
+Game.BlessingRepository.define("Bloodlust", {
+    name: "Bloodlust",
+    description: "Gain 1 HP for each enemy defeated.",    
+    message: "",
+    action: function(player) {
+    
+    }
+});
+
+Game.BlessingRepository.define("Banish", {
+    name: "Banish",
+    description: "Banish the nearest enemy.",    
+    message: "",
+    action: function(player) {
+    
+    }
+});
+
+Game.BlessingRepository.define("Flow of Time", {
+    name: "Flow of Time",
+    description: "Return to the beginning of the level.",    
+    message: "",
+    action: function(player) {
+
+    }
+});
+
 
