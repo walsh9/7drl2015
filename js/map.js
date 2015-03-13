@@ -24,8 +24,21 @@ Game.Map.prototype.getTile = function(x, y) {
     if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
         return Game.Tile.nullTile;
     } else {
-        return this._tiles.get(x,y) || Game.Tile.nullTile;
+        return this._tiles.get(x, y) || Game.Tile.nullTile;
     }
+};
+
+Game.Map.prototype.findTile = function(character) {
+    var results = [];
+    for (var x = 0; x < this._width; x++) {
+        for (var y = 0; y < this._height; y++) {
+            var tile = this._tiles.get(x,y)
+            if (tile._char === character) {
+                results.push({x: x, y: y});
+            }
+        }
+    }
+    return results;
 };
 
 Game.Map.prototype.setTile = function(x, y, tile) {

@@ -99,6 +99,88 @@ Game.EntityMixins.TaskActor = {
     }
 };
 
+Game.EntityMixins.BuffGetter = {
+    name: 'BuffGetter',
+    init: function(template) {
+        this._attackBuffs = [];
+        this._defenseBuffs = [];
+    },
+    addAttackBuff: function(amount, duration, name, unique) {
+        for (var i=0; i < this._attackBuffs.length; i++) {
+            if (unique && this._attackBuffs[i].name === name) {
+                return false;
+            }
+        }
+        this._attackBuffs.push({amount: amount,  /* # of attacks */ duration: duration, name: name, unique: unique});
+        return true;
+    },
+    addDefenseBuff: function(amount, duration, name, unique) {
+        for (var i=0; i < this._attackBuffs.length; i++) {
+            if (unique && this._attackBuffs[i].name === name) {
+                return false;
+            }
+        }
+        this._attackBuffs.push({amount: amount,  /* # of attacks */ duration: duration, name: name, unique: unique});
+        return true;
+    },
+    getAttackBuffs: function(){
+        return this._attackBuffs;
+    },
+    getAttackBuffTotal: function() {
+        var total = 0;
+        for (var i = 0; i < this._attackBuffs.length; i++) {
+            total += this._attackBuffs[i].amount;
+        };
+        return total;
+    },
+    decrementAttackBuffDuration: function() {
+        var i = this._attackBuffs.length; 
+        while (i--) {
+            this._attackBuffs[i].duration -= 1;
+            if (this._attackBuffs[i].duration === 0) {
+                this._attackbuffs.splice(i, 1);
+            };
+        };
+    },
+    removeAttackBuff: function(name) {
+        for (var i = 0; i < this._attackBuffs.length; i++) {
+            if (this._defenseBuffs[i].name == name) {
+                this._defenseBuffs.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    },
+    getDefenseBuffs: function(){
+        return this._attackBuffs;
+    },
+    getDefenseBuffTotal: function() {
+        var total = 0;
+        for (var i = 0; i < this._defenseBuffs.length; i++) {
+            total += this._defenseBuffs[i].amount;
+        };
+        return total;
+    },
+    decrementDefenseBuffDuration: function() {
+        var i = this._defenseBuffs.length; 
+        while (i--) {
+            this._defenseBuffs[i].duration -= 1;
+            if (this._defenseBuffs[i].duration === 0) {
+                this._defenseBuffs.splice(i, 1);
+            };
+        };
+    },
+    removeDefenseBuff: function(name) {
+        for (var i = 0; i < this._defenseBuffs.length; i++) {
+            if (this._defenseBuffs[i].name == name) {
+                this._defenseBuffs.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    },
+}
+
 // This signifies our entity can attack basic destructible enities
 Game.EntityMixins.Attacker = {
     name: 'Attacker',
@@ -106,26 +188,15 @@ Game.EntityMixins.Attacker = {
     init: function(template) {
         this._attackValue = template['attackValue'] || 1;
     },
+    getBaseAttackValue: function() {
+        return this._attackValue
+    },
     getAttackValue: function() {
         var modifier = 0;
-        // If we can equip items, then have to take into 
-        // consideration weapon and armor
-        if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            if (this.getWeapon()) {
-                modifier += this.getWeapon().getAttackValue();
-            }
-            if (this.getArmor()) {
-                modifier += this.getArmor().getAttackValue();
-            }
+        if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
+            modifier += this.getAttackBuffTotal();
         }
         return this._attackValue + modifier;
-    },
-    increaseAttackValue: function(value) {
-        // If no value was passed, default to 2.
-        value = value || 2;
-        // Add to the attack value.
-        this._attackValue += value;
-        Game.sendMessage(this, "You look stronger!");
     },
     attack: function(target) {
         // If the target is destructible, calculate the damage
@@ -133,8 +204,7 @@ Game.EntityMixins.Attacker = {
         if (target.hasMixin('Destructible')) {
             var attack = this.getAttackValue();
             var defense = target.getDefenseValue();
-            var max = Math.max(0, attack - defense);
-            var damage = 1 + Math.floor(Math.random() * max);
+            var damage = attack - defense;
 
             Game.sendMessage(this, 'You strike the %s for %d damage!', 
                 [target.getName(), damage]);
@@ -162,17 +232,13 @@ Game.EntityMixins.Destructible = {
         this._hp = template['hp'] || this._maxHp;
         this._defenseValue = template['defenseValue'] || 0;
     },
+    getBaseDefenseValue: function() {
+        return this._defenseValue
+    },
     getDefenseValue: function() {
         var modifier = 0;
-        // If we can equip items, then have to take into 
-        // consideration weapon and armor
-        if (this.hasMixin(Game.EntityMixins.Equipper)) {
-            if (this.getWeapon()) {
-                modifier += this.getWeapon().getDefenseValue();
-            }
-            if (this.getArmor()) {
-                modifier += this.getArmor().getDefenseValue();
-            }
+        if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
+            modifier += this.getDefenseBuffTotal();
         }
         return this._defenseValue + modifier;
     },
@@ -286,6 +352,18 @@ Game.EntityMixins.Sight = {
                 }
             });
         return found;
+    },
+    getVisibleTargets: function(distance) {
+        var targets = [];
+        var range = distance || this._sightRadius;
+        var candidates = this.getMap().getEntitiesWithinRadius(this.getX(), this.getY(), range);
+        for (var i = 0; i < candidates.length; i++) {
+            var candidate = candidates[i];
+            if (this.canSee(candidate) && candidate != this) {
+                targets.push(candidate);
+            }
+        }
+        return targets;
     }
 };
 
@@ -346,11 +424,22 @@ Game.EntityMixins.Pious = {
         }        return false;
     },
     removeBlessing: function(i) {
-        this._blessings.splice(0, 1);
+        this._blessings.splice(i, 1);
     },
     canAddBlessing: function() {
         return this._blessings.length < this._blessingSlots;
     },
+    invokeBlessing: function(n) {
+        var blessing = this._blessings[n - 1];
+        if (this._favor >= blessing.favorCost) {
+            this._favor -= blessing.favorCost;
+            console.log(blessing);
+            Game.sendMessage(this, blessing.message);
+            blessing.action(this);
+            this.removeBlessing(n - 1);
+        } else
+        Game.sendMessage(this, "You don't have enough favor. Ascend the citadel to gain more.");        
+    }
 };
 
 Game.EntityMixins.CorpseDropper = {

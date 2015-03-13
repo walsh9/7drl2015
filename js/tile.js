@@ -36,18 +36,26 @@ Game.Tile.floorTile = new Game.Tile({
     description: 'A smooth tiled floor'
 });
 
+Game.Tile.glowingFloorTile = new Game.Tile({
+    character: '.',
+    foreground: 'purple',
+    walkable: true,
+    blocksLight: false,
+    description: 'The floor here is glowing.'
+});
+
 Game.Tile.wallTile = new Game.Tile({
     character: '#',
     foreground: 'green',
     description: 'A smooth stone wall'
 });
 
-Game.Tile.stairsDownTile = new Game.Tile({
-    character: '>',
+Game.Tile.stairsUpTile = new Game.Tile({
+    character: '<',
     foreground: 'lightgreen',
     walkable: false,
     blocksLight: false,
-    description: 'A marble staircase leading downwards',
+    description: 'A marble staircase leading upwards',
     action: function() {
         var nextLevel = Game._currentScreen._level + 1;
         Game._currentScreen._level++;

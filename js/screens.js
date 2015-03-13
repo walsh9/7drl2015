@@ -37,8 +37,10 @@ Game.Screen.playScreen = {
     newLevel: function(level) {
         this._player.setFavor(3);
         for (var i = 0; i < 3; i++) {
-            var blessing = Game.BlessingRepository.createRandom();
-            this._player.addBlessing(blessing);
+            if (this._player.canAddBlessing) {
+                var blessing = Game.BlessingRepository.createRandom();
+                this._player.addBlessing(blessing);
+            }
         }
         // Create a map based on our size parameters
         var width = 100;
@@ -93,7 +95,9 @@ Game.Screen.playScreen = {
         var hpLine = statColors + vsprintf('HP: %d/%d', 
             [this._player.getHp(), this._player.getMaxHp()]);
         var favorLine = statColors + 'Favor: ' + Array(this._player.getFavor() + 1).join('* ');
-
+        var attackLine = statColors + 'Attack:' + this._player.getBaseAttackValue();
+        var attackBuff = this._player.getAttackBuffTotal();
+        attackLine += '(' + attackBuff + ')';
 
         var blessingsHeader = headColors + '[B]lessings';
 
@@ -101,10 +105,12 @@ Game.Screen.playScreen = {
         drawStatus(1, levelLine);
         drawStatus(2, hpLine);
         drawStatus(3, favorLine);
-        drawStatus(5, blessingsHeader);
+        drawStatus(4, attackLine);
+
+        drawStatus(6, blessingsHeader);
 
         for (var i = 0; i < blessings.length; i++) {
-            drawStatus(i + 7, statColors + '[' + (i + 1) + '] ' + blessings[i].name);
+            drawStatus(i + 8, statColors + '[' + (i + 1) + '] ' + blessings[i].name);
         }
 
 
@@ -201,6 +207,24 @@ Game.Screen.playScreen = {
                 this.move(0, -1, 0);
             } else if (inputData.keyCode === ROT.VK_DOWN) {
                 this.move(0, 1, 0);
+            } else if (inputData.keyCode === ROT.VK_1) {
+                this._player.invokeBlessing(1);
+            } else if (inputData.keyCode === ROT.VK_2) {
+                this._player.invokeBlessing(2);
+            } else if (inputData.keyCode === ROT.VK_3) {
+                this._player.invokeBlessing(3);
+            } else if (inputData.keyCode === ROT.VK_4) {
+                this._player.invokeBlessing(4);
+            } else if (inputData.keyCode === ROT.VK_5) {
+                this._player.invokeBlessing(5);
+            } else if (inputData.keyCode === ROT.VK_6) {
+                this._player.invokeBlessing(6);
+            } else if (inputData.keyCode === ROT.VK_7) {
+                this._player.invokeBlessing(7);
+            } else if (inputData.keyCode === ROT.VK_8) {
+                this._player.invokeBlessing(8);
+            } else if (inputData.keyCode === ROT.VK_9) {
+                this._player.invokeBlessing(9);
             } else {
                 // Not a valid key
                 return;

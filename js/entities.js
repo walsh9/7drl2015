@@ -10,7 +10,7 @@ Game.PlayerTemplate = {
     mixins: [Game.EntityMixins.PlayerActor,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.Sight, Game.EntityMixins.MessageRecipient,
-             Game.EntityMixins.Pious]
+             Game.EntityMixins.Pious, Game.EntityMixins.BuffGetter]
 };
 
 // Create our central entity repository
@@ -21,7 +21,7 @@ Game.EntityRepository.define('lobster knight', {
     character: 'k',
     foreground: 'red',
     maxHp: 4,
-    defense: 1,
+    defenseValue: 1,
     sightRadius: 5,
     tasks: ['hunt', 'wander'],
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
