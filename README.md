@@ -15,7 +15,7 @@
 
 ##To do in the next 3 days
 
-* A few more abilitites.
+* A few more abilities.
 * Some less boring enemies.
 * Rewrite most of the ability names.
 * Win condition
