@@ -90,6 +90,7 @@ Game.Screen.playScreen = {
         var headColors = '%c{green}%b{black}';
         var statColors = '%c{white}%b{black}';
         var healthColors = '%c{red}%b{black}';
+        var favorColors = '%c{yellow}%b{black}';
         var grayColors = '%c{gray}%b{black}';
         var drawStatus = function (y, text) {
             display.drawText(screenWidth + 1, y, text);
@@ -100,7 +101,7 @@ Game.Screen.playScreen = {
         var hpLine = statColors + 'HP:' +
             healthColors + Array(player.getHp() + 1).join('+') +
             grayColors + Array(player.getMaxHp() - player.getHp() + 1).join('-');
-        var favorLine = statColors + 'Favor: ' + Array(player.getFavor() + 1).join('* ');
+        var favorLine = statColors + 'Favor: ' + favorColors + Array(player.getFavor() + 1).join('* ');
         var attackLine = statColors + 'Attack:' + player.getBaseAttackValue();
         var attackBuff = player.getAttackBuffTotal();
         attackLine += '(' + attackBuff + ')';
@@ -194,6 +195,7 @@ Game.Screen.playScreen = {
                         if (map.getEntityAt(x, y)) {
                             glyph = map.getEntityAt(x, y);
                         }
+                        foreground = 'darkGray';
                     } else {
                         // Since the tile was previously explored but is not 
                         // visible, we want to change the foreground color to
