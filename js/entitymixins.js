@@ -46,9 +46,9 @@ Game.EntityMixins.TaskActor = {
         }
     },
     canDoTask: function(task) {
-        if (task === 'hunt') {
+        if (task === 'hunt' || task === 'huntX' || task === 'huntY' || task === 'slimeHunt') {
             return this.hasMixin('Sight') && this.canSee(this.getMap().getPlayer());
-        } else if (task === 'wander') {
+        } else if (task === 'wander' || task === 'wanderX' || task === 'wanderY' || task === 'slime') {
             return true;
         } else {
             throw new Error('Tried to perform undefined task ' + task);
@@ -87,6 +87,50 @@ Game.EntityMixins.TaskActor = {
             count++;
         });
     },
+    huntX: function() {
+        var player = this.getMap().getPlayer();
+        // If we are adjacent to the player, then attack instead of hunting.
+        var offsets = Math.abs(player.getX() - this.getX()) +
+            Math.abs(player.getY() - this.getY());
+        if (offsets === 1) {
+            if (this.hasMixin('Attacker')) {
+                this.attack(player);
+                return;
+            }
+        }
+        // Move left or right
+        var offset = player.getX() - this.getX();
+        if (offset !== 0) {
+            var moveOffset = offset > 0 ? 1 : -1;
+            var x = this.getX() + moveOffset;
+            var y = this.getY();
+            if (!this.getMap().getEntityAt(x, y) && this.getMap().getTile(x, y).isWalkable()) {
+                this.tryMove(x, y);
+            }
+        };
+    },
+    huntY: function() {
+        var player = this.getMap().getPlayer();
+        // If we are adjacent to the player, then attack instead of hunting.
+        var offsets = Math.abs(player.getX() - this.getX()) +
+            Math.abs(player.getY() - this.getY());
+        if (offsets === 1) {
+            if (this.hasMixin('Attacker')) {
+                this.attack(player);
+                return;
+            }
+        }
+        // Move up or down
+        var offset = player.getY() - this.getY();
+        if (offset !== 0) {
+            var moveOffset = offset > 0 ? 1 : -1;
+            var x = this.getX();
+            var y = this.getY() + moveOffset;
+            if (!this.getMap().getEntityAt(x, y) && this.getMap().getTile(x, y).isWalkable()) {
+                this.tryMove(x, y);
+            }
+        };
+    },
     wander: function() {
         // Flip coin to determine if moving by 1 in the positive or negative direction
         var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
@@ -96,7 +140,70 @@ Game.EntityMixins.TaskActor = {
         } else {
             this.tryMove(this.getX(), this.getY() + moveOffset);
         }
-    }
+    },
+    wanderX: function() {
+        // Flip coin to determine if moving by 1 in the positive or negative direction
+        var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
+        this.tryMove(this.getX() + moveOffset, this.getY());
+    },
+    wanderY: function() {
+        // Flip coin to determine if moving by 1 in the positive or negative direction
+        var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
+        this.tryMove(this.getX(), this.getY() + moveOffset);
+    },
+    slimeHunt: function() {
+        var player = this.getMap().getPlayer();
+        this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
+        // If we are adjacent to the player, then attack instead of hunting.
+        var offsets = Math.abs(player.getX() - this.getX()) + 
+            Math.abs(player.getY() - this.getY());
+        if (offsets === 1) {
+            if (this.hasMixin('Attacker')) {
+                this.attack(player);
+                return;
+            }
+        }
+
+        // Generate the path and move to the first tile.
+        var source = this;
+        var path = new ROT.Path.AStar(player.getX(), player.getY(), function(x, y) {
+            // If an entity is present at the tile, can't move there.
+            var entity = source.getMap().getEntityAt(x, y);
+            if (entity && entity !== player && entity !== source) {
+                return false;
+            }
+            return (source.getMap().getTile(x, y).isWalkable());
+        }, {topology: 4});
+        // Once we've gotten the path, we want to move to the second cell that is
+        // passed in the callback (the first is the entity's strting point)
+        var count = 0;
+        path.compute(source.getX(), source.getY(), function(x, y) {
+            if (count == 1) {
+                source.tryMove(x, y);
+            }
+            count++;
+        });       
+    },
+    slime: function() {
+        var x, y, moveOffset;
+        this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
+        for (var i = 0; i < 100; i++) {
+            x = this.getX();
+            y = this.getY();
+            // Flip coin to determine if moving by 1 in the positive or negative direction
+            moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
+            // Flip coin to determine if moving in x direction or y direction
+            if (Math.round(Math.random()) === 1) {
+                x += moveOffset;
+            } else {
+                y += moveOffset;
+            }
+            if (!this.getMap().getTile(x,y).hasNext()) {
+                this.tryMove(x, y);
+                return;
+            }
+        }
+    },
 };
 
 Game.EntityMixins.BuffGetter = {
@@ -208,11 +315,17 @@ Game.EntityMixins.Attacker = {
     },
     listeners: {
         onKill: function() {
-            if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
-                if (this.hasAbility('healOnKill')) {
-                    this.addHp(1);
-                    Game.sendMessage(this, "You feel stronger.");
-                }
+            if (this.hasMixin(Game.EntityMixins.BuffGetter) && this.hasAbility('healOnKill')) {
+                this.addHp(1);
+                Game.sendMessage(this, "You feel better.");
+            }
+        },
+        onDamageTaken: function(attacker) {
+            if (this.hasMixin(Game.EntityMixins.BuffGetter) && this.hasAbility('zapOnHit')) {
+                var damage = Math.max(1 - attacker.getDefenseValue() + this.getBuffTotal('attack'), 0);
+                Game.sendMessage(this, 'Your storm shield zaps the %s for %s damage!', [attacker.getName(), damage]);
+                attacker.takeDamage(this, damage);
+                this.decrementBuffDuration('attack');
             }
         },
         details: function() {
@@ -281,6 +394,9 @@ Game.EntityMixins.Destructible = {
             this.raiseEvent('onDeath', attacker);
             attacker.raiseEvent('onKill', this);
             this.kill();
+        } else if (damage > 0) {
+            this.raiseEvent('onDamageTaken', attacker);
+            attacker.raiseEvent('onDamageDealt', this);
         }
     },
     listeners: {

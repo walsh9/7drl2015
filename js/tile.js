@@ -7,6 +7,7 @@ Game.Tile = function(properties) {
     this._description = properties['description'] || '';
     this._action = properties['action'] || undefined;
     this._bumpable = (properties['action'] != undefined);
+    this._nextTile = properties['nextTile'] || undefined;
 };
 Game.Tile.extend(Game.Glyph);
 
@@ -26,6 +27,12 @@ Game.Tile.prototype.getDescription = function() {
 Game.Tile.prototype.getAction = function() {
     return this._action;
 };
+Game.Tile.prototype.hasNext = function() {
+    return (this._nextTile !== undefined);
+};
+Game.Tile.prototype.getNext = function() {
+    return Game.Tile[this._nextTile];
+};
 
 Game.Tile.nullTile = new Game.Tile({description: '(unknown)'});
 
@@ -36,7 +43,23 @@ Game.Tile.floorTile = new Game.Tile({
     description: 'A smooth tiled floor'
 });
 
-Game.Tile.glowingFloorTile = new Game.Tile({
+(function() {
+    var snailTrailDuration = 14;
+    Game.Tile.snailTrailTile = {};
+    for (var i = 0; i < snailTrailDuration; i++) {
+        Game.Tile['snailTrailTile' + i] = new Game.Tile({
+            character: '.',
+            nextTile: ((1 + i) < snailTrailDuration) ? 'snailTrailTile' + (1 + i) : 'floorTile',
+            foreground: 'white',
+            background: 'darkgreen',
+            walkable: true,
+            blocksLight: false,
+            description: 'Snail slime' + i
+        });
+    }
+})()
+
+Game.Tile.pathTile = new Game.Tile({
     character: '~',
     foreground: 'cyan',
     walkable: true,
@@ -73,10 +96,10 @@ Game.Tile.waterTile = new Game.Tile({
 
 Game.Tile.corpseTile = new Game.Tile({
     character: '%',
-    foreground: 'red',
+    foreground: 'gray',
     walkable: true,
     blocksLight: false,
-    description: 'A lobsterfolk corpse'
+    description: 'A battered shell'
 });
 
 // Helper function

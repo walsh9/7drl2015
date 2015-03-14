@@ -86,7 +86,7 @@ Game.BlessingRepository.define("Guiding Tide", {
         astar.compute(stairs.x, stairs.y, function(x, y) {
             console.log(x +':'+ y);
             if (map.getTile(x, y) == Game.Tile.floorTile) {
-               map.setTile(x, y, Game.Tile.glowingFloorTile);
+               map.setTile(x, y, Game.Tile.pathTile);
             }
         });
     }
@@ -133,7 +133,7 @@ Game.BlessingRepository.define("Storm Shield", {
     description: "Does 1 damage to attacker, when you are attacked.",    
     message: "",
     action: function(player) {
-
+        player.addAbility('zapOnHit');
     }
 });
 

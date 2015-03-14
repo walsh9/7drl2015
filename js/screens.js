@@ -33,6 +33,12 @@ Game.Screen.playScreen = {
         this._player = new Game.Entity(Game.PlayerTemplate);
         this.newLevel(1);
     },
+    initGame: function() {
+
+    },
+    everyTurn: function() {
+        this.ageTiles();
+    },
     exit: function() { console.log("Exited play screen."); },
     newLevel: function(level) {
         this._player.setFavor(3);
@@ -80,6 +86,22 @@ Game.Screen.playScreen = {
                 '%c{white}%b{black}' + messages[i]
             );
         }    
+    },
+    ageTiles: function() {
+        var screenWidth = Game.getScreenWidth();
+        var screenHeight = Game.getScreenHeight();
+        var offsets = this.getScreenOffsets();
+        var topLeftX = offsets.x;
+        var topLeftY = offsets.y;
+        var map = this._player.getMap();
+        for (var x = topLeftX; x < topLeftX + screenWidth; x++) {
+            for (var y = topLeftY; y < topLeftY + screenHeight; y++) {
+                var tile = map.getTile(x, y);
+                if (tile.hasNext()) {
+                    map.setTile(x, y, tile.getNext());
+                }
+            }
+        }      
     },
     renderStatus: function(display) {
         var player = this._player
@@ -259,6 +281,7 @@ Game.Screen.playScreen = {
                 return;
             }
             // Unlock the engine
+            this.everyTurn();
             this._player.getMap().getEngine().unlock();
         } else if (inputType === 'keypress') {
             var keyChar = String.fromCharCode(inputData.charCode);
