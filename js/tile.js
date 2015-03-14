@@ -37,11 +37,11 @@ Game.Tile.floorTile = new Game.Tile({
 });
 
 Game.Tile.glowingFloorTile = new Game.Tile({
-    character: '.',
-    foreground: 'purple',
+    character: '~',
+    foreground: 'cyan',
     walkable: true,
     blocksLight: false,
-    description: 'The floor here is glowing.'
+    description: 'A strong current.'
 });
 
 Game.Tile.wallTile = new Game.Tile({

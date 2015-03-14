@@ -6,7 +6,7 @@ Game.BlessingRepository.define("Water Sword", {
     message: "You are enveloped in a green aura.",
     target: 'player',
     action: function (player) {
-        player.addAttackBuff(1, -1, 'Water Sword', true) 
+        player.addBuff('attack', 1, -1, 'Water Sword', true, "Your aura vanishes!") 
     }
 });
 
@@ -29,11 +29,11 @@ Game.BlessingRepository.define("Ocean's Wrath", {
             console.log(targets);
         for (var i = 0; i < targets.length; i++) {
             var target = targets[i];
-            var damage = Math.max(1 - target.getDefenseValue() + player.getAttackBuffTotal(), 0);
+            var damage = Math.max(1 - target.getDefenseValue() + player.getBuffTotal('attack'), 0);
             Game.sendMessage(player, 'You blast the %s for %s damage!', [target.getName(), damage]);
             target.takeDamage(player, damage);
         }
-        player.decrementAttackBuffDuration();
+        player.decrementBuffDuration('attack');
     }
 });
 
@@ -56,7 +56,7 @@ Game.BlessingRepository.define("Strike", {
     description: "Your next attack does +3 damage",    
     message: "Your hair stands on end.",    
     action: function (player) {
-        player.addAttackBuff(3, 1, 'Strike', false) 
+        player.addBuff('attack', 3, 1, 'Strike', false, "You no longer feel strong.") 
     }
 });
 
@@ -97,7 +97,7 @@ Game.BlessingRepository.define("Bubble Shield", {
     description: "Block the next 3 attacks.",    
     message: "You are enveloped by a bubble.",
     action: function(player) {
-        player.addDefenseBuff(10, 3, 'Bubble shield', false) 
+        player.addBuff('defense', 10, 3, 'Bubble shield', false, "Your bubble pops!") 
     }
 });
 
@@ -115,7 +115,7 @@ Game.BlessingRepository.define("Bloodlust", {
     description: "Gain 1 HP for each enemy defeated.",    
     message: "",
     action: function(player) {
-    
+        player.addAbility('healOnKill');
     }
 });
 
@@ -125,6 +125,15 @@ Game.BlessingRepository.define("Banish", {
     message: "",
     action: function(player) {
     
+    }
+});
+
+Game.BlessingRepository.define("Storm Shield", {
+    name: "Storm Shield",
+    description: "Does 1 damage to attacker, when you are attacked.",    
+    message: "",
+    action: function(player) {
+
     }
 });
 

@@ -103,7 +103,7 @@ Game.Screen.playScreen = {
             grayColors + Array(player.getMaxHp() - player.getHp() + 1).join('-');
         var favorLine = statColors + 'Favor: ' + favorColors + Array(player.getFavor() + 1).join('* ');
         var attackLine = statColors + 'Attack:' + player.getBaseAttackValue();
-        var attackBuff = player.getAttackBuffTotal();
+        var attackBuff = player.getBuffTotal('attack');
         attackLine += '(' + attackBuff + ')';
 
         s++;

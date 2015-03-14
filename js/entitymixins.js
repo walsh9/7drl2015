@@ -102,79 +102,51 @@ Game.EntityMixins.TaskActor = {
 Game.EntityMixins.BuffGetter = {
     name: 'BuffGetter',
     init: function(template) {
-        this._attackBuffs = [];
-        this._defenseBuffs = [];
+        this._buffs = [];
         this._abilities = [];
     },
-    addAttackBuff: function(amount, duration, name, unique) {
-        for (var i=0; i < this._attackBuffs.length; i++) {
-            if (unique && this._attackBuffs[i].name === name) {
+    addBuff: function(type, amount, duration, name, isUnique, removeMessage) {
+        for (var i=0; i < this._buffs.length; i++) {
+            if (isUnique && this._buffs[i].name === name) {
                 return false;
             }
         }
-        this._attackBuffs.push({amount: amount,  /* # of attacks */ duration: duration, name: name, unique: unique});
+        this._buffs.push({type: type,
+                          amount: amount, 
+                          duration: duration,  /* # of attacks */  
+                          name: name, 
+                          isUnique: isUnique, 
+                          removeMessage: removeMessage});
         return true;
     },
-    addDefenseBuff: function(amount, duration, name, unique) {
-        for (var i=0; i < this._defenseBuffs.length; i++) {
-            if (unique && this._defenseBuffs[i].name === name) {
-                return false;
-            }
-        }
-        this._defenseBuffs.push({amount: amount,  /* # of attacks */ duration: duration, name: name, unique: unique});
-        return true;
+    getBuffs: function(type){
+        return this._buffs.filter(function (buff) {return (buff.type === type)});
     },
-    getAttackBuffs: function(){
-        return this._attackBuffs;
-    },
-    getAttackBuffTotal: function() {
+    getBuffTotal: function(type) {
         var total = 0;
-        for (var i = 0; i < this._attackBuffs.length; i++) {
-            total += this._attackBuffs[i].amount;
+        var buffs = this.getBuffs(type);
+        for (var i = 0; i < buffs.length; i++) {
+            total += buffs[i].amount;
         };
         return total;
     },
-    decrementAttackBuffDuration: function() {
-        var i = this._attackBuffs.length; 
+    decrementBuffDuration: function(type) {
+        var i = this._buffs.length; 
         while (i--) {
-            this._attackBuffs[i].duration -= 1;
-            if (this._attackBuffs[i].duration === 0) {
-                this._attackBuffs.splice(i, 1);
-            };
-        };
-    },
-    removeAttackBuff: function(name) {
-        for (var i = 0; i < this._attackBuffs.length; i++) {
-            if (this._defenseBuffs[i].name == name) {
-                this._defenseBuffs.splice(i, 1);
-                return true;
+            if (this._buffs[i].type === type) {
+                this._buffs[i].duration -= 1;
+                if (this._buffs[i].duration === 0) {
+                    Game.sendMessage(this, this._buffs[i].removeMessage);
+                    this._buffs.splice(i, 1);
+                };
             }
-        }
-        return false;
-    },
-    getDefenseBuffs: function(){
-        return this._attackBuffs;
-    },
-    getDefenseBuffTotal: function() {
-        var total = 0;
-        for (var i = 0; i < this._defenseBuffs.length; i++) {
-            total += this._defenseBuffs[i].amount;
-        };
-        return total;
-    },
-    decrementDefenseBuffDuration: function() {
-        var i = this._defenseBuffs.length; 
-        while (i--) {
-            this._defenseBuffs[i].duration -= 1;
-            if (this._defenseBuffs[i].duration === 0) {
-                this._defenseBuffs.splice(i, 1);
-            };
         };
     },
-    removeDefenseBuff: function(name) {
-        for (var i = 0; i < this._defenseBuffs.length; i++) {
-            if (this._defenseBuffs[i].name == name) {
-                this._defenseBuffs.splice(i, 1);
+    removeBuffByName: function(name) {
+        for (var i = 0; i < this._buffs.length; i++) {
+            if (this._buffs[i].name == name) {
+                Game.sendMessage(this, this._buffs[i].removeMessage);
+                this._buffs.splice(i, 1);
                 return true;
             }
         }
@@ -211,7 +183,7 @@ Game.EntityMixins.Attacker = {
     getAttackValue: function() {
         var modifier = 0;
         if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
-            modifier += this.getAttackBuffTotal();
+            modifier += this.getBuffTotal('attack');
         }
         return this._attackValue + modifier;
     },
@@ -230,11 +202,19 @@ Game.EntityMixins.Attacker = {
 
             target.takeDamage(this, damage);
             if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
-                this.decrementAttackBuffDuration();
+                this.decrementBuffDuration('attack');
             }
         }
     },
     listeners: {
+        onKill: function() {
+            if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
+                if (this.hasAbility('healOnKill')) {
+                    this.addHp(1);
+                    Game.sendMessage(this, "You feel stronger.");
+                }
+            }
+        },
         details: function() {
             return [{key: 'attack', value: this.getAttackValue()}];
         }
@@ -258,7 +238,7 @@ Game.EntityMixins.Destructible = {
     getDefenseValue: function() {
         var modifier = 0;
         if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
-            modifier += this.getDefenseBuffTotal();
+            modifier += this.getBuffTotal('defense');
         }
         return this._defenseValue + modifier;
     },
@@ -270,6 +250,9 @@ Game.EntityMixins.Destructible = {
     },
     setHp: function(hp) {
         this._hp = hp;
+    },
+    addHp: function(hp) {
+        this._hp = Math.min(this._hp + hp, this._maxHp);
     },
     increaseDefenseValue: function(value) {
         // If no value was passed, default to 2.
@@ -288,6 +271,9 @@ Game.EntityMixins.Destructible = {
     },
     takeDamage: function(attacker, damage) {
         this._hp -= damage;
+        if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
+            this.decrementBuffDuration('defense');
+        }
         // If have 0 or less HP, then remove ourseles from the map
         if (this._hp <= 0) {
             Game.sendMessage(attacker, 'You kill the %s!', [this.getName()]);
@@ -298,10 +284,6 @@ Game.EntityMixins.Destructible = {
         }
     },
     listeners: {
-        onGainLevel: function() {
-            // Heal the entity.
-            this.setHp(this.getMaxHp());
-        },
         details: function() {
             return [
                 {key: 'defense', value: this.getDefenseValue()},
