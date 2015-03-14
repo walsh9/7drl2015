@@ -72,7 +72,7 @@ Game.BlessingRepository.define("Ebb and Flow", {
 Game.BlessingRepository.define("Guiding Tide", {
     name: "Guiding Tide",
     description: "The way forward will be revealed.",    
-    message: "Water is flowing towards the Jewel of Zot",
+    message: "A strong current is guiding you towards the Jewel of Zot",
     action: function(player) {
         var map = player.getMap();
         var stairs = map.findTile('<')[0];

@@ -10,7 +10,6 @@ Game.EntityMixins.PlayerActor = {
             return;
         }
         this._acting = true;
-        // this.addTurnHunger();
         // Detect if the game is over
         if (!this.isAlive()) {
             Game.Screen.playScreen.setGameEnded(true);
@@ -321,7 +320,7 @@ Game.EntityMixins.Attacker = {
             }
         },
         onDamageTaken: function(attacker) {
-            if (this.hasMixin(Game.EntityMixins.BuffGetter) && this.hasAbility('zapOnHit')) {
+            if (this.hasMixin(Game.EntityMixins.BuffGetter) && this.hasAbility('zapOnHit') && attacker) {
                 var damage = Math.max(1 - attacker.getDefenseValue() + this.getBuffTotal('attack'), 0);
                 Game.sendMessage(this, 'Your storm shield zaps the %s for %s damage!', [attacker.getName(), damage]);
                 attacker.takeDamage(this, damage);
@@ -392,11 +391,15 @@ Game.EntityMixins.Destructible = {
             Game.sendMessage(attacker, 'You kill the %s!', [this.getName()]);
             // Raise events
             this.raiseEvent('onDeath', attacker);
-            attacker.raiseEvent('onKill', this);
+            if (attacker) {
+                attacker.raiseEvent('onKill', this);
+            }
             this.kill();
         } else if (damage > 0) {
             this.raiseEvent('onDamageTaken', attacker);
-            attacker.raiseEvent('onDamageDealt', this);
+            if (attacker) {
+                attacker.raiseEvent('onDamageDealt', this);
+            }
         }
     },
     listeners: {

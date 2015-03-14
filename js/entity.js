@@ -72,10 +72,16 @@ Game.Entity.prototype.tryMove = function(x, y, map) {
     } else if (tile.isWalkable()) {        
         // Update the entity's position
         this.setPosition(x, y);
+        var action = tile.getAction();
+        if (action) {
+            action.call(null, this);
+        };
         return true;
     } else if (this.hasMixin(Game.EntityMixins.PlayerActor) && tile.isBumpable()) {
         var action = tile.getAction();
-        action.call();
+        if (action) {
+            action.call(null, this);
+        }
     }
     return false;
 };

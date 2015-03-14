@@ -54,7 +54,23 @@ Game.Tile.floorTile = new Game.Tile({
             background: 'darkgreen',
             walkable: true,
             blocksLight: false,
-            description: 'Snail slime' + i
+            description: 'Toxic slime',
+            action: function(target) {
+                // Only toxic to the player :o
+                console.log(target)
+                if (target.getChar() === '@') {
+                    var slimeDamage = 1;
+                    if (target.hasMixin('buffGetter')) {
+                        slimeDamage = Math.max(slimeDamage - target.getBuffTotal('defense'), 0)
+                    }
+                    Game.sendMessage(target, 'The toxic slime burns you for ' + slimeDamage + ' damage!');
+                    console.log(target.getHp());
+                    target.takeDamage(null, slimeDamage);
+                    console.log(slimeDamage);
+                    console.log(target.getHp());
+                }
+            }
+
         });
     }
 })()

@@ -1,6 +1,6 @@
 // Player template
 Game.PlayerTemplate = {
-    name: 'human (you)',
+    name: 'you',
     character: '@',
     foreground: 'white',
     maxHp: 10,
@@ -70,7 +70,7 @@ Game.EntityRepository.define('guard snail', {
     character: 's',
     foreground: 'green',
     speed: 500,
-    maxHp: 2,
+    maxHp: 4,
     defenseValue: 1,
     sightRadius: 5,
     tasks: ['slimeHunt', 'slime'],
