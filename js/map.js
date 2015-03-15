@@ -185,6 +185,10 @@ Game.Map.prototype.updateEntityPosition = function(
     this._entities[key] = entity;
 };
 
+Game.Map.prototype.getTurn = function() {
+    return Math.floor(this._scheduler.getTime() * 1000);
+}
+
 Game.Map.prototype.getPlayer = function() {
     return this._player;
 };

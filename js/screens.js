@@ -51,11 +51,10 @@ Game.Screen.playScreen = {
             }
         }
         // Create a map based on our size parameters
-        var width = 100;
-        var height = 48;
-        var depth = 6;
+        var width = 60;
+        var height = 40;
         // Create our map from the tiles and player
-        var tiles = new Game.Builder(width, height, depth).getTiles();
+        var tiles = new Game.Builder(width, height).getTiles();
         var map = new Game.Map.Citadel(tiles, this._player);
         // Start the map's engine
         map.getEngine().start();
@@ -301,6 +300,10 @@ Game.Screen.playScreen = {
                 this._player.invokeBlessing(8);
             } else if (inputData.keyCode === ROT.VK_9) {
                 this._player.invokeBlessing(9);
+            } else if (inputData.keyCode === ROT.VK_B) {
+                Game.Screen.blessingHelpScreen.setup(this._player);
+                this.setSubScreen(Game.Screen.blessingHelpScreen);
+                return;
             } else {
                 // Not a valid key
                 return;
@@ -843,6 +846,28 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
     }
 });
 
+Game.Screen.blessingScreen = {
+    render: function(display) {
+        var text = 'Help';
+        var border = '-------------';
+        var y = 0;
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+        display.drawText(Game.getScreenWidth() / 2 - border.length / 2, y++, border);
+        display.drawText(1, y++, 'Retrieve the Jewel of Zot from the lobsterfolk\'s Sunken Citadel!');
+        y += 3;
+        display.drawText(1, y++, 'Arrow keys, hjkl, or wasd to move.');
+        display.drawText(1, y++, '[1] through [9] to invoke your god\'s blessings');
+        display.drawText(1, y++, '[;] to look around you');
+        display.drawText(1, y++, '[?] to show this help screen');
+        y += 3;
+        text = '--- press any key to continue ---';
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+    },
+    handleInput: function(inputType, inputData) {
+        Game.Screen.playScreen.setSubScreen(null);
+    }
+};
+
 // Define our help screen
 Game.Screen.helpScreen = {
     render: function(display) {
@@ -863,5 +888,40 @@ Game.Screen.helpScreen = {
     },
     handleInput: function(inputType, inputData) {
         Game.Screen.playScreen.setSubScreen(null);
+    }
+};
+
+// Define our blessing help screen
+Game.Screen.blessingHelpScreen = {
+    setup: function(entity) {
+        // Must be called before rendering.
+        this._entity = entity;
+        this._ignoredOne = false; 
+    },
+    render: function(display) {
+        var text = 'Available Blessings';
+        var border = '-------------------';
+        var y = 0;
+        var blessingColors = '%c{yellow}';
+        var descriptionColors = '%c{white}';
+        var blessings = this._entity.getBlessings();
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+        display.drawText(Game.getScreenWidth() / 2 - border.length / 2, y++, border);
+        y += 1;
+        for (var i = 0; i < blessings.length; i++) {
+            var blessing = blessings[i];
+            display.drawText(1, y++, blessingColors + blessing.name)
+            display.drawText(5, y++, descriptionColors + blessing.description)
+        }
+        y = display.getOptions().height - 1;
+        text = '--- Press any key to continue ---';
+        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+    },
+    handleInput: function(inputType, inputData) {
+        if (this._ignoredOne) {
+            Game.Screen.playScreen.setSubScreen(null);
+        } else {
+            this._ignoredOne = true;
+        }
     }
 };
