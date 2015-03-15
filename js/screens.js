@@ -227,7 +227,7 @@ Game.Screen.playScreen = {
                         }
                         if (character === ' ') {
                             (background = '#255')
-                        } else if (character === '~') {
+                        } else if (character === '~' || character === '&') {
                             (character = '.')
                         }
                         foreground = '#255';
@@ -237,7 +237,7 @@ Game.Screen.playScreen = {
                         // dark gray.
                         if (character === ' ') {
                             (background = '#255')
-                        } else if (character === '~') {
+                        } else if (character === '~' || character === '&') {
                             (character = '.')
                         }
                         foreground = '#255';

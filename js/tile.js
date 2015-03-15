@@ -2,6 +2,8 @@ Game.Tile = function(properties) {
     properties = properties || {};
     Game.Glyph.call(this, properties);
     this._walkable = properties['walkable'] || false;
+    this._enemyWalkable = (properties['enemyWalkable'] !== undefined) ? 
+        properties['enemyWalkable'] : this._walkable ;
     this._blocksLight = (properties['blocksLight'] !== undefined) ? 
         properties['blocksLight'] : true;
     this._description = properties['description'] || '';
@@ -14,6 +16,9 @@ Game.Tile.extend(Game.Glyph);
 // Standard getters
 Game.Tile.prototype.isWalkable = function() {
     return this._walkable;
+};
+Game.Tile.prototype.isEnemyWalkable = function() {
+    return this._enemyWalkable;
 };
 Game.Tile.prototype.isBlockingLight = function() {
     return this._blocksLight;
@@ -57,7 +62,7 @@ Game.Tile.floorTile = new Game.Tile({
             description: 'Toxic slime',
             action: function(target) {
                 // Only toxic to the player :o
-                if (target.getChar() === '@') {
+                if (target.hasMixin(Game.EntityMixins.PlayerActor)) {
                     var slimeDamage = 1;
                     if (target.hasMixin('buffGetter')) {
                         slimeDamage = Math.max(slimeDamage - target.getBuffTotal('defense'), 0)
@@ -109,12 +114,13 @@ Game.Tile.jewelOfZot = new Game.Tile({
     }
 });
 
-Game.Tile.waterTile = new Game.Tile({
-    character: '~',
-    foreground: 'blue',
-    walkable: false,
+Game.Tile.vortexTile = new Game.Tile({
+    character: '&',
+    foreground: '#008',
+    walkable: true,
+    enemyWalkable: false,
     blocksLight: false,
-    description: 'Sea water'
+    description: 'A strange vortex'
 });
 
 Game.Tile.corpseTile = new Game.Tile({
@@ -125,7 +131,7 @@ Game.Tile.corpseTile = new Game.Tile({
     description: 'A battered shell'
 });
 
-// Helper function
+// Helper functions
 Game.getNeighborPositions = function(x, y) {
     var tiles = [];
     // Generate all possible offsets
@@ -138,5 +144,25 @@ Game.getNeighborPositions = function(x, y) {
             tiles.push({x: x + dX, y: y + dY});
         }
     }
+    return tiles.randomize();
+};
+Game.getHorizontalNeighbors = function(x, y) {
+    var tiles = [];
+    tiles.push({x: x - 1, y: y});
+    tiles.push({x: x + 1, y: y});
+    return tiles.randomize();
+};
+Game.getVerticalNeighbors = function(x, y) {
+    var tiles = [];
+    tiles.push({x: x, y: y - 1});
+    tiles.push({x: x, y: y + 1});
+    return tiles.randomize();
+};
+Game.getCardinalNeighbors = function(x, y) {
+    var tiles = [];
+    tiles.push({x: x - 1, y: y});
+    tiles.push({x: x + 1, y: y});
+    tiles.push({x: x, y: y - 1});
+    tiles.push({x: x, y: y + 1});
     return tiles.randomize();
 };

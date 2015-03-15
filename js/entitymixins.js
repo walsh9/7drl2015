@@ -35,6 +35,10 @@ Game.EntityMixins.TaskActor = {
         this._tasks = template['tasks'] || ['wander']; 
     },
     act: function() {
+        // Flip crabs in vortices
+        if (this.isCrab() &&  this.inVortex()) {
+            this.flipCrab();
+        }
         // Iterate through all our tasks
         for (var i = 0; i < this._tasks.length; i++) {
             if (this.canDoTask(this._tasks[i])) {
@@ -53,82 +57,124 @@ Game.EntityMixins.TaskActor = {
             throw new Error('Tried to perform undefined task ' + task);
         }
     },
-    hunt: function() {
-        var player = this.getMap().getPlayer();
-
-        // If we are adjacent to the player, then attack instead of hunting.
+    inVortex: function() {
+        return (this.getMap().getTile(this.getX(), this.getY()) === Game.Tile.vortexTile);
+    },
+    isCrab: function() {
+        return (this.getChar() === 'c' || this.getChar() === 'u')
+    },
+    flipCrab: function() {
+        if (this.getChar() === 'c') {
+            this.setChar('u');
+            this._tasks = ['huntX', 'wanderX'];
+        } else if (this.getChar() === 'u') {
+            this.setChar('c');
+            this._tasks = ['huntY', 'wanderY'];
+        }
+    },
+    canAttack: function(player) {
         var offsets = Math.abs(player.getX() - this.getX()) + 
             Math.abs(player.getY() - this.getY());
         if (offsets === 1) {
-            if (this.hasMixin('Attacker')) {
-                this.attack(player);
-                return;
+            if (this.hasMixin('Attacker') && 
+                this.getMap().getTile(this.getX(), this.getY()).isEnemyWalkable()) {
+                return true;
             }
         }
-
-        // Generate the path and move to the first tile.
-        var source = this;
-        var path = new ROT.Path.AStar(player.getX(), player.getY(), function(x, y) {
-            // If an entity is present at the tile, can't move there.
-            var entity = source.getMap().getEntityAt(x, y);
-            if (entity && entity !== player && entity !== source) {
-                return false;
+        return false;
+    },
+    hunt: function() {
+        var player = this.getMap().getPlayer();
+        var self = this;
+        // If we are adjacent to the player, then attack instead of hunting.
+        if (this.canAttack(player)) {
+            this.attack(player);
+            return;
+        }
+        // First try to escape Vortex
+        if (this.inVortex()) {
+            var walkableTiles = Game.getCardinalNeighbors(this.getX(), this.getY())
+                .filter( function(t) { return self.getMap().getTile(t.x, t.y).isEnemyWalkable() });
+            if (walkableTiles.length > 0) {
+                this.tryMove(walkableTiles[0].x, walkableTiles[0].y);
             }
-            return source.getMap().getTile(x, y).isWalkable();
-        }, {topology: 4});
-        // Once we've gotten the path, we want to move to the second cell that is
-        // passed in the callback (the first is the entity's strting point)
-        var count = 0;
-        path.compute(source.getX(), source.getY(), function(x, y) {
-            if (count == 1) {
-                source.tryMove(x, y);
-            }
-            count++;
-        });
+        } else {
+            // Generate the path and move to the first tile.
+            var source = this;
+            var path = new ROT.Path.AStar(player.getX(), player.getY(), function(x, y) {
+                // If an entity is present at the tile, can't move there.
+                var entity = source.getMap().getEntityAt(x, y);
+                if (entity && entity !== player && entity !== source) {
+                    return false;
+                }
+                return source.getMap().getTile(x, y).isEnemyWalkable();
+            }, {topology: 4});
+            // Once we've gotten the path, we want to move to the second cell that is
+            // passed in the callback (the first is the entity's strting point)
+            var count = 0;
+            path.compute(source.getX(), source.getY(), function(x, y) {
+                if (count == 1) {
+                    source.tryMove(x, y);
+                }
+                count++;
+            });
+        }
     },
     huntX: function() {
         var player = this.getMap().getPlayer();
+        var self = this;
         // If we are adjacent to the player, then attack instead of hunting.
-        var offsets = Math.abs(player.getX() - this.getX()) +
-            Math.abs(player.getY() - this.getY());
-        if (offsets === 1) {
-            if (this.hasMixin('Attacker')) {
-                this.attack(player);
-                return;
-            }
+        if (this.canAttack(player)) {
+            this.attack(player);
+            return;
         }
-        // Move left or right
-        var offset = player.getX() - this.getX();
-        if (offset !== 0) {
-            var moveOffset = offset > 0 ? 1 : -1;
-            var x = this.getX() + moveOffset;
-            var y = this.getY();
-            if (!this.getMap().getEntityAt(x, y) && this.getMap().getTile(x, y).isWalkable()) {
-                this.tryMove(x, y);
+
+        if (this.inVortex()) {
+            var walkableTiles = Game.getHorizontalNeighbors(this.getX(), this.getY())
+                .filter( function(t) { return self.getMap().getTile(t.x, t.y).isEnemyWalkable() });
+            if (walkableTiles.length > 0) {
+                this.tryMove(walkableTiles[0].x, walkableTiles[0].y);
             }
-        };
+        } else {
+            // Move left or right
+            var offset = player.getX() - this.getX();
+            if (offset !== 0) {
+                var moveOffset = offset > 0 ? 1 : -1;
+                var x = this.getX() + moveOffset;
+                var y = this.getY();
+                if (!this.getMap().getEntityAt(x, y) && this.getMap().getTile(x, y).isEnemyWalkable()) {
+                    this.tryMove(x, y);
+                }
+            };
+        }
     },
     huntY: function() {
         var player = this.getMap().getPlayer();
-        // If we are adjacent to the player, then attack instead of hunting.
-        var offsets = Math.abs(player.getX() - this.getX()) +
-            Math.abs(player.getY() - this.getY());
-        if (offsets === 1) {
-            if (this.hasMixin('Attacker')) {
-                this.attack(player);
-                return;
-            }
+         var self = this;
+       // If we are adjacent to the player, then attack instead of hunting.
+        if (this.canAttack(player)) {
+            this.attack(player);
+            return;
         }
-        // Move up or down
-        var offset = player.getY() - this.getY();
-        if (offset !== 0) {
-            var moveOffset = offset > 0 ? 1 : -1;
-            var x = this.getX();
-            var y = this.getY() + moveOffset;
-            if (!this.getMap().getEntityAt(x, y) && this.getMap().getTile(x, y).isWalkable()) {
-                this.tryMove(x, y);
+        // First try to escape Vortex
+        if (this.inVortex()) {
+            var walkableTiles = Game.getVerticalNeighbors(this.getX(), this.getY())
+                .filter( function(t) { return self.getMap().getTile(t.x, t.y).isEnemyWalkable() });
+            if (walkableTiles.length > 0) {
+                this.tryMove(walkableTiles[0].x, walkableTiles[0].y);
             }
-        };
+        } else {
+            // Move up or down
+            var offset = player.getY() - this.getY();
+            if (offset !== 0) {
+                var moveOffset = offset > 0 ? 1 : -1;
+                var x = this.getX();
+                var y = this.getY() + moveOffset;
+                if (!this.getMap().getEntityAt(x, y) && this.getMap().getTile(x, y).isEnemyWalkable()) {
+                    this.tryMove(x, y);
+                }
+            };
+        }
     },
     wander: function() {
         // Flip coin to determine if moving by 1 in the positive or negative direction
@@ -152,36 +198,43 @@ Game.EntityMixins.TaskActor = {
     },
     slimeHunt: function() {
         var player = this.getMap().getPlayer();
-        this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
+        var self = this;
+        if (!this.inVortex()) {
+            this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
+        };
         // If we are adjacent to the player, then attack instead of hunting.
-        var offsets = Math.abs(player.getX() - this.getX()) + 
-            Math.abs(player.getY() - this.getY());
-        if (offsets === 1) {
-            if (this.hasMixin('Attacker')) {
-                this.attack(player);
-                return;
-            }
+        if (this.canAttack(player)) {
+            this.attack(player);
+            return;
         }
-
-        // Generate the path and move to the first tile.
-        var source = this;
-        var path = new ROT.Path.AStar(player.getX(), player.getY(), function(x, y) {
-            // If an entity is present at the tile, can't move there.
-            var entity = source.getMap().getEntityAt(x, y);
-            if (entity && entity !== player && entity !== source) {
-                return false;
+        // First try to escape Vortex
+        if (this.inVortex()) {
+            var walkableTiles = Game.getVerticalNeighbors(this.getX(), this.getY())
+                .filter( function(t) { return self.getMap().getTile(t.x, t.y).isEnemyWalkable() });
+            if (walkableTiles.length > 0) {
+                this.tryMove(walkableTiles[0].x, walkableTiles[0].y);
             }
-            return (source.getMap().getTile(x, y).isWalkable());
-        }, {topology: 4});
-        // Once we've gotten the path, we want to move to the second cell that is
-        // passed in the callback (the first is the entity's strting point)
-        var count = 0;
-        path.compute(source.getX(), source.getY(), function(x, y) {
-            if (count == 1) {
-                source.tryMove(x, y);
-            }
-            count++;
-        });       
+        } else {
+            // Generate the path and move to the first tile.
+            var source = this;
+            var path = new ROT.Path.AStar(player.getX(), player.getY(), function(x, y) {
+                // If an entity is present at the tile, can't move there.
+                var entity = source.getMap().getEntityAt(x, y);
+                if (entity && entity !== player && entity !== source) {
+                    return false;
+                }
+                return (source.getMap().getTile(x, y).isEnemyWalkable());
+            }, {topology: 4});
+            // Once we've gotten the path, we want to move to the second cell that is
+            // passed in the callback (the first is the entity's strting point)
+            var count = 0;
+            path.compute(source.getX(), source.getY(), function(x, y) {
+                if (count == 1) {
+                    source.tryMove(x, y);
+                }
+                count++;
+            });    
+        }
     },
     slime: function() {
         var x, y, moveOffset;

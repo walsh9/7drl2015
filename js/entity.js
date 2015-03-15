@@ -74,7 +74,8 @@ Game.Entity.prototype.tryMove = function(x, y, map) {
         return false;        
     // Check if we can walk on the tile
     // and if so simply walk onto it
-    } else if (tile.isWalkable()) {        
+    } else if ( this.hasMixin(Game.EntityMixins.PlayerActor) && (tile.isWalkable() ) ||
+                tile.isEnemyWalkable()) {        
         // Update the entity's position
         this.setPosition(x, y);
         var action = tile.getAction();
@@ -82,7 +83,7 @@ Game.Entity.prototype.tryMove = function(x, y, map) {
             action.call(null, this);
         };
         return true;
-    } else if (this.hasMixin(Game.EntityMixins.PlayerActor) && tile.isBumpable()) {
+    } else if ( this.hasMixin(Game.EntityMixins.PlayerActor) && tile.isBumpable() ) {
         var action = tile.getAction();
         if (action) {
             action.call(null, this);

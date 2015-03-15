@@ -6,7 +6,7 @@ Game.BlessingRepository.define("Flowing Might", {
     message: "You are enveloped in a green aura.",
     target: 'player',
     action: function (player) {
-        player.addBuff('attack', 1, -1, 'Water Sword', true, "Your aura vanishes!") 
+        player.addBuff('attack', 1, -1, 'Flowing Might', true, "Your aura vanishes!") 
     }
 });
 
@@ -101,7 +101,7 @@ Game.BlessingRepository.define("Bubble Shield", {
 
 Game.BlessingRepository.define("Flux Step", {
     name: "Flux Step",
-    description: "Gain 5 free turns",    
+    description: "Take 5 free action",    
     message: "",
     action: function(player) {
         player.setSpeed(5000);   //not done     
@@ -110,19 +110,28 @@ Game.BlessingRepository.define("Flux Step", {
 
 Game.BlessingRepository.define("Insatiable Vortex", {
     name: "Insatiable Vortex",
-    description: "Gain 1 HP for each enemy defeated.",    
+    description: "Gain 1 HP for each enemy defeated this level.",    
     message: "",
     action: function(player) {
         player.addAbility('healOnKill');
     }
 });
 
-Game.BlessingRepository.define("Warding Vortex", {
-    name: "Banish",
-    description: "Banish the nearest enemy.",    
-    message: "",
+Game.BlessingRepository.define("Vortex Ward", {
+    name: "Vortex Ward",
+    description: "Create a 3 x 3 vortex around you that enemies cannot pass.",    
+    message: "The waters around you swirl in arcane patterns.",
     action: function(player) {
-    
+        var x = player.getX();
+        var y = player.getY();
+        var tiles = Game.getNeighborPositions(x, y)
+        tiles.push({x: x, y: y});
+        for (var i = 0; i <  tiles.length; i++) {
+            var tile = tiles[i];
+            if (player.getMap().getTile(tile.x, tile.y).isWalkable()) { 
+                player.getMap().setTile(tile.x, tile.y, Game.Tile.vortexTile);
+            }
+        };       
     }
 });
 
@@ -163,7 +172,10 @@ Game.BlessingDeck.add(Game.BlessingRepository.create("Ebb and Flow"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Ebb and Flow"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Insatiable Vortex"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.shuffle()
