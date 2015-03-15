@@ -8,7 +8,6 @@ var Game =  {
         var options = {
             width: this._screenWidth + 20,
             height: this._screenHeight,
-            fontSize: 16,
             fontFamily: '"Droid Sans Mono", monospace',
         }
 

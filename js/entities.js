@@ -24,7 +24,7 @@ Game.EntityRepository.define('lobsterknight', {
     defenseValue: 1,
     sightRadius: 5,
     tasks: ['hunt', 'wander'],
-    description: 'Their hard shells block 1 point of damage.',
+    description: 'Hard shell blocks 1 point of damage.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
@@ -37,7 +37,7 @@ Game.EntityRepository.define('hatchling', {
     maxHp: 3,
     sightRadius: 5,
     tasks: ['hunt', 'wander'],
-    description: 'Their shells are still soft.',
+    description: 'Young and boring.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
@@ -50,7 +50,7 @@ Game.EntityRepository.define('mercenary crabfolk x', {
     maxHp: 3,
     sightRadius: 5,
     tasks: ['huntX', 'wanderX'],
-    description: 'Can only walk sideways.',
+    description: 'Can only walk sideways, but can still attack in 4 directions.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
@@ -63,7 +63,7 @@ Game.EntityRepository.define('mercenary crabfolk y', {
     maxHp: 3,
     sightRadius: 5,
     tasks: ['huntY', 'wanderY'],
-    description: 'Can only walk sideways.',
+    description: 'Can only walk sideways, but can still attack in 4 directions.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
