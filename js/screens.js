@@ -58,7 +58,7 @@ Game.Screen.playScreen = {
         }
         // Create a map based on our size parameters
         var width = 60;
-        var height = 40;
+        var height = 24;
         // Create our map from the tiles and player
         var tiles = new Game.Builder(width, height).getTiles();
         var map = new Game.Map.Citadel(tiles, this._player, level);
