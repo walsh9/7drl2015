@@ -55,7 +55,7 @@ Game.Entity.prototype.tryMove = function(x, y, map) {
     var target = map.getEntityAt(x, y);
 
     // If an entity was present at the tile
-    if (target) {
+    if (target && target !== this) {
         // An entity can only attack if the entity has the Attacker mixin and 
         // either the entity or the target is the player.
         if (this.hasMixin('Attacker') && 

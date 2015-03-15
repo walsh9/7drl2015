@@ -203,33 +203,47 @@ Game.Screen.playScreen = {
                     // Fetch the glyph for the tile and render it to the screen
                     // at the offset position.
                     var glyph = map.getTile(x, y);
+                    var character = glyph.getChar();
                     var foreground = glyph.getForeground();
+                    var background = glyph.getBackground();
                     // If we are at a cell that is in the field of vision, we need
                     // to check if there are items or entities.
                     if (visibleCells[x + ',' + y]) {
                         // Check if we have an entity at the position
                         if (map.getEntityAt(x, y)) {
                             glyph = map.getEntityAt(x, y);
+                            character = glyph.getChar();
                         }
                         // Update the foreground color in case our glyph changed
                         foreground = glyph.getForeground();
                     } else if (this._player.hasAbility('telepathy')) {
                         if (map.getEntityAt(x, y)) {
                             glyph = map.getEntityAt(x, y);
+                            character = glyph.getChar();
                         }
-                        foreground = 'darkGray';
+                        if (character === ' ') {
+                            (background = '#255')
+                        } else if (character === '~') {
+                            (character = '.')
+                        }
+                        foreground = '#255';
                     } else {
                         // Since the tile was previously explored but is not 
                         // visible, we want to change the foreground color to
                         // dark gray.
-                        foreground = 'darkGray';
+                        if (character === ' ') {
+                            (background = '#255')
+                        } else if (character === '~') {
+                            (character = '.')
+                        }
+                        foreground = '#255';
                     }
                     display.draw(
                         x - topLeftX,
                         y - topLeftY,
-                        glyph.getChar(), 
+                        character, 
                         foreground, 
-                        glyph.getBackground());
+                        background);
                 }
             }
         }
@@ -250,14 +264,25 @@ Game.Screen.playScreen = {
         }
         if (inputType === 'keydown') {
             // Movement
-            if (inputData.keyCode === ROT.VK_LEFT) {
+            if (inputData.keyCode === ROT.VK_LEFT || 
+                inputData.keyCode === ROT.VK_H ||
+                inputData.keyCode === ROT.VK_A) {
                 this.move(-1, 0, 0);
-            } else if (inputData.keyCode === ROT.VK_RIGHT) {
+            } else if (inputData.keyCode === ROT.VK_RIGHT || 
+                       inputData.keyCode === ROT.VK_L ||
+                       inputData.keyCode === ROT.VK_D) {
                 this.move(1, 0, 0);
-            } else if (inputData.keyCode === ROT.VK_UP) {
+            } else if (inputData.keyCode === ROT.VK_UP || 
+                       inputData.keyCode === ROT.VK_K ||
+                       inputData.keyCode === ROT.VK_W) {
                 this.move(0, -1, 0);
-            } else if (inputData.keyCode === ROT.VK_DOWN) {
+            } else if (inputData.keyCode === ROT.VK_DOWN || 
+                       inputData.keyCode === ROT.VK_J ||
+                       inputData.keyCode === ROT.VK_S) {
                 this.move(0, 1, 0);
+            } else if (inputData.keyCode === ROT.VK_SPACE || 
+                       inputData.keyCode === ROT.VK_PERIOD) {
+                this.move(0, 0, 0);
             } else if (inputData.keyCode === ROT.VK_1) {
                 this._player.invokeBlessing(1);
             } else if (inputData.keyCode === ROT.VK_2) {
@@ -828,6 +853,8 @@ Game.Screen.helpScreen = {
         display.drawText(Game.getScreenWidth() / 2 - border.length / 2, y++, border);
         display.drawText(1, y++, 'Retrieve the Jewel of Zot from the lobsterfolk\'s Sunken Citadel!');
         y += 3;
+        display.drawText(1, y++, 'Arrow keys, hjkl, or wasd to move.');
+        display.drawText(1, y++, '[1] through [9] to invoke your god\'s blessings');
         display.drawText(1, y++, '[;] to look around you');
         display.drawText(1, y++, '[?] to show this help screen');
         y += 3;

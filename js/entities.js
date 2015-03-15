@@ -43,7 +43,7 @@ Game.EntityRepository.define('lobsterfolk hatchling', {
 
 Game.EntityRepository.define('mercenary crabfolk x', {
     name: 'mercenary crabfolk',
-    character: 'c',
+    character: 'u',
     foreground: 'blue',
     maxHp: 3,
     sightRadius: 5,
@@ -55,7 +55,7 @@ Game.EntityRepository.define('mercenary crabfolk x', {
 
 Game.EntityRepository.define('mercenary crabfolk y', {
     name: 'mercenary crabfolk',
-    character: 'u',
+    character: 'c',
     foreground: 'blue',
     maxHp: 3,
     sightRadius: 5,

@@ -38,20 +38,20 @@ Game.Tile.nullTile = new Game.Tile({description: '(unknown)'});
 
 Game.Tile.floorTile = new Game.Tile({
     character: '.',
+    foreground: '#6c9',
     walkable: true,
     blocksLight: false,
     description: 'A smooth tiled floor'
 });
 
 (function() {
-    var snailTrailDuration = 14;
+    var snailTrailDuration = 20;
     Game.Tile.snailTrailTile = {};
     for (var i = 0; i < snailTrailDuration; i++) {
         Game.Tile['snailTrailTile' + i] = new Game.Tile({
-            character: '.',
+            character: '~',
             nextTile: ((1 + i) < snailTrailDuration) ? 'snailTrailTile' + (1 + i) : 'floorTile',
-            foreground: 'white',
-            background: 'darkgreen',
+            foreground: 'green',
             walkable: true,
             blocksLight: false,
             description: 'Toxic slime',
@@ -84,14 +84,14 @@ Game.Tile.pathTile = new Game.Tile({
 });
 
 Game.Tile.wallTile = new Game.Tile({
-    character: '#',
-    foreground: 'green',
+    character: ' ',
+    background: '#6c9',
     description: 'A smooth stone wall'
 });
 
 Game.Tile.stairsUpTile = new Game.Tile({
     character: '<',
-    foreground: 'lightgreen',
+    foreground: '#6c9',
     walkable: false,
     blocksLight: false,
     description: 'A marble staircase leading upwards',
