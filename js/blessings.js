@@ -99,14 +99,14 @@ Game.BlessingRepository.define("Bubble Shield", {
         player.addBuff('defense', 10, 3, 'Bubble Shield', false, "Your bubble pops!") 
     }
 });
-
-Game.BlessingRepository.define("Rushing Step", {
-    name: "Rushing Step",
+                                
+Game.BlessingRepository.define("Flow Into Time", {
+    name: "Flow Into Time",
     description: "Take 5 free turns.",    
     message: "A swift current guides your movements.",
     action: function(player) {
         player.addAbility('speed')
-        player.addBuff('speed', 1, 5, "Rushing Step", false, "Your speed returns to normal.");   //not done     
+        player.addBuff('speed', 1, 5, "Flow Into Time", false, "Your speed returns to normal.");   //not done     
     }
 });
 
@@ -160,9 +160,9 @@ Game.BlessingDeck.add(Game.BlessingRepository.create("Swell"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Rushing Step"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Rushing Step"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Rushing Step"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Flow Into Time"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Flow Into Time"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Flow Into Time"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Maelstrom"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Maelstrom"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Coursing Power"));
