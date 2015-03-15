@@ -114,12 +114,34 @@ Game.Map.prototype.getEntitiesWithinRadius = function(centerX, centerY, radius) 
 Game.Map.prototype.getRandomFloorPosition = function() {
     // Randomly generate a tile which is a floor
     var x, y;
-    do {
+        do {
         x = Math.floor(Math.random() * this._width);
         y = Math.floor(Math.random() * this._height);
     } while(!this.isEmptyFloor(x, y));
     return {x: x, y: y};
 };
+
+Game.Map.prototype.getClearFloorPosition = function() {
+    // Randomly generate a tile which is a floor surrounded by floor
+    var pos, neighbors;
+    var map = this;
+    do {
+        pos = this.getRandomFloorPosition();
+        neighbors = Game.getNeighborPositions(pos.x, pos.y);
+        neighbors = neighbors.filter(function(p) { return map.isEmptyFloor(p.x, p.y); });
+    } while(neighbors.length < 8);
+    return {x: pos.x, y: pos.y};
+};
+
+Game.Map.prototype.getXBoundClearFloorPosition = function(minX, maxX) {
+    // Randomly generate a tile which is a floor surrounded by floor
+    var pos;
+    do {
+        pos = this.getClearFloorPosition();
+    } while(pos.x < minX || pos.x > maxX);
+    return {x: pos.x, y: pos.y};
+};
+
 
 Game.Map.prototype.addEntityAtRandomPosition = function(entity) {
     var position = this.getRandomFloorPosition();
