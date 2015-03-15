@@ -1,28 +1,28 @@
 Game.BlessingRepository = new Game.Repository('blessings', Game.Blessing);
 
-Game.BlessingRepository.define("Flowing Might", {
-    name: "Flowing Might",
-    description: "An enduring +1 bonus to all damage dealt.",
-    message: "You are enveloped in a green aura.",
+Game.BlessingRepository.define("Coursing Power", {
+    name: "Coursing Power",
+    description: "A +1 bonus to all damage dealt this level.",
+    message: "The water around you dances with energy.",
     target: 'player',
     action: function (player) {
-        player.addBuff('attack', 1, -1, 'Flowing Might', true, "Your aura vanishes!") 
+        player.addBuff('attack', 1, -1, 'Coursing Power', true) 
     }
 });
 
 Game.BlessingRepository.define("Swell", {
     name: "Swell",
-    description: "Heal 3 HP",    
+    description: "Heal 3 HP.",    
     message: "Your blood feels warm.",
     action: function(player) {
         player.setHp(Math.min(player.getHp() + 3, player.getMaxHp()));
     }
 });
 
-Game.BlessingRepository.define("Ocean's Wrath", {
-    name: "Ocean's Wrath",
-    description: "Deal 2 damage to all enemies in line of sight",    
-    message: "Lightning radiates from your feet!",
+Game.BlessingRepository.define("Maelstrom", {
+    name: "Maelstrom",
+    description: "Deal 2 damage to all enemies in your line of sight.",    
+    message: "The waters twist violently!",
     action: function(player) {
         var map = player.getMap();
         var targets = player.getVisibleTargets();
@@ -37,9 +37,9 @@ Game.BlessingRepository.define("Ocean's Wrath", {
     }
 });
 
-Game.BlessingRepository.define("Ocean's Bounty", {
-    name: "Ocean's Bounty",
-    description: "Instantly make 3 new blessings available.",    
+Game.BlessingRepository.define("Overflowing", {
+    name: "Overflowing",
+    description: "Be instantly granted 3 new blessings.",    
     message: "Levi smiles upon you.",
     action: function(player) {
         for (var i = 0; i < 3; i++) {
@@ -51,12 +51,12 @@ Game.BlessingRepository.define("Ocean's Bounty", {
     }
 });
 
-Game.BlessingRepository.define("Surge", {
-    name: "Surge",
+Game.BlessingRepository.define("Surging Might", {
+    name: "Surging Might",
     description: "Your next attack does +3 damage",    
-    message: "Your hair stands on end.",    
+    message: "The might of heroes surges through your veins.",    
     action: function (player) {
-        player.addBuff('attack', 3, 1, 'Strike', false, "You no longer feel strong.") 
+        player.addBuff('attack', 3, 1, 'Surging Might', false, "You feel less mighty.") 
     }
 });
 
@@ -95,21 +95,23 @@ Game.BlessingRepository.define("Bubble Shield", {
     description: "Block the next 3 attacks.",    
     message: "You are enveloped by a bubble.",
     action: function(player) {
-        player.addBuff('defense', 10, 3, 'Bubble shield', false, "Your bubble pops!") 
+        player.setChar('O');
+        player.addBuff('defense', 10, 3, 'Bubble Shield', false, "Your bubble pops!") 
     }
 });
 
-Game.BlessingRepository.define("Flux Step", {
-    name: "Flux Step",
-    description: "Take 5 free action",    
-    message: "",
+Game.BlessingRepository.define("Rushing Step", {
+    name: "Rushing Step",
+    description: "Take 5 free turns.",    
+    message: "A swift current guides your movements.",
     action: function(player) {
-        player.setSpeed(5000);   //not done     
+        player.addAbility('speed')
+        player.addBuff('speed', 1, 5, "Rushing Step", false, "Your speed returns to normal.");   //not done     
     }
 });
 
-Game.BlessingRepository.define("Insatiable Vortex", {
-    name: "Insatiable Vortex",
+Game.BlessingRepository.define("Thirst", {
+    name: "Thirst",
     description: "Gain 1 HP for each enemy defeated this level.",    
     message: "",
     action: function(player) {
@@ -137,45 +139,42 @@ Game.BlessingRepository.define("Vortex Ward", {
 
 Game.BlessingRepository.define("Storm Shield", {
     name: "Storm Shield",
-    description: "Does 1 damage to attacker, when you are attacked.",    
+    description: "Everytime you are attacked this level, counterattack for 1 damage.",    
     message: "You hear thunder.",
     action: function(player) {
         player.addAbility('zapOnHit');
     }
 });
 
-Game.BlessingRepository.define("Tunneling Vortex", {
-    name: "Flow of Time",
-    description: "Return to the beginning of the level.",    
-    message: "",
-    action: function(player) {
-
-    }
-});
-
 Game.BlessingDeck = new Game.Deck("blessings");
 
-Game.BlessingDeck.add(Game.BlessingRepository.create("Flowing Might"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Flowing Might"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Bubble Shield"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Bubble Shield"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Bubble Shield"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Surge"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Surge"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Surge"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Surging Might"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Surging Might"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Surging Might"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Swell"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Swell"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Swell"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Ocean's Wrath"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Ocean's Wrath"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Rushing Step"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Rushing Step"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Rushing Step"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Maelstrom"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Maelstrom"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Coursing Power"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Coursing Power"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Ebb and Flow"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Ebb and Flow"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Vortex Ward"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Thirst"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Thirst"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Overflowing"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Overflowing"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.shuffle()

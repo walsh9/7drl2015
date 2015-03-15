@@ -13,8 +13,10 @@ Game.Screen.startScreen = {
         display.drawText(1, y++, "But now the %c{red}lobsterfolk%c{#ccc} have stolen the jewel and are using it");
         display.drawText(1, y++, "for dark purposes!");
         y++;
-        display.drawText(1, y++, "With the help of your powerful but capricious god, you must infiltrate");
+        display.drawText(1, y++, "With the help of Levi, god of tides and currents, you must infiltrate");
         display.drawText(1, y++, "the %c{#6c9}Sunken Citadel%c{#ccc} and retrieve it!");
+        y++;
+        y++;
         y = display.getOptions().height - 2;
         display.drawText(1, y++, "%c{yellow}Press [Enter] to start!");
     },
@@ -49,6 +51,11 @@ Game.Screen.playScreen = {
         this._player.setFavor(3);
         this._player.setHp(this._player.getMaxHp());
         this._player.removeAbility('telepathy');
+        this._player.removeAbility('zapOnHit');
+        this._player.removeAbility('healOnKill');
+        this._player.removeBuffByName('Coursing Power');
+
+
         var newFavors = (level === 1) ? 4 : 3;
         for (var i = 0; i < newFavors; i++) {
             if (this._player.canAddBlessing) {
@@ -318,15 +325,10 @@ Game.Screen.playScreen = {
                 return;
             }
             // Unlock the engine
-            this.everyTurn();
             this._player.getMap().getEngine().unlock();
         } else if (inputType === 'keypress') {
             var keyChar = String.fromCharCode(inputData.charCode);
-            if (keyChar === '>') {
-                this.move(0, 0, 1);
-            } else if (keyChar === '<') {
-                this.move(0, 0, -1);
-            } else if (keyChar === ';') {
+            if (keyChar === ';') {
                 // Setup the look screen.
                 var offsets = this.getScreenOffsets();
                 Game.Screen.lookScreen.setup(this._player,

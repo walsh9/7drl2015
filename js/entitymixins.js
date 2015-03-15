@@ -6,6 +6,7 @@ Game.EntityMixins.PlayerActor = {
     name: 'PlayerActor',
     groupName: 'Actor',
     act: function() {
+        this.decrementBuffDuration('speed');
         if (this._acting) {
             return;
         }
@@ -35,16 +36,22 @@ Game.EntityMixins.TaskActor = {
         this._tasks = template['tasks'] || ['wander']; 
     },
     act: function() {
-        // Flip crabs in vortices
-        if (this.isCrab() &&  this.inVortex()) {
-            this.flipCrab();
+        var player = Game.Screen.playScreen._player;
+        if (player.getBuffTotal('speed') > 0) {
+            // skip turn if player has speed buff
         }
-        // Iterate through all our tasks
-        for (var i = 0; i < this._tasks.length; i++) {
-            if (this.canDoTask(this._tasks[i])) {
-                // If we can perform the task, execute the function for it.
-                this[this._tasks[i]]();
-                return;
+        else {
+            // Flip crabs in vortices
+            if (this.isCrab() &&  this.inVortex()) {
+                this.flipCrab();
+            }
+            // Iterate through all our tasks
+            for (var i = 0; i < this._tasks.length; i++) {
+                if (this.canDoTask(this._tasks[i])) {
+                    // If we can perform the task, execute the function for it.
+                    this[this._tasks[i]]();
+                    return;
+                }
             }
         }
     },
@@ -300,6 +307,10 @@ Game.EntityMixins.BuffGetter = {
             if (this._buffs[i].type === type) {
                 this._buffs[i].duration -= 1;
                 if (this._buffs[i].duration === 0) {
+                    //hacky special case
+                    if (this._buffs[i].name === "Bubble Shield") {
+                        this.setChar('@');
+                    }
                     Game.sendMessage(this, this._buffs[i].removeMessage);
                     this._buffs.splice(i, 1);
                 };
