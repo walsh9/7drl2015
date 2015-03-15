@@ -50,7 +50,7 @@ Game.Tile.floorTile = new Game.Tile({
 });
 
 (function() {
-    var snailTrailDuration = 16;
+    var snailTrailDuration = 14;
     Game.Tile.snailTrailTile = {};
     for (var i = 0; i < snailTrailDuration; i++) {
         Game.Tile['snailTrailTile' + i] = new Game.Tile({
