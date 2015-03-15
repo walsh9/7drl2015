@@ -83,7 +83,7 @@ Game.BlessingRepository.define("Guiding Tide", {
         var p = {x: player.getX(), y: player.getY()}
         var astar = new ROT.Path.AStar(p.x, p.y, passableCallback, {topology: 4});
         astar.compute(stairs.x, stairs.y, function(x, y) {
-            if (map.getTile(x, y) == Game.Tile.floorTile) {
+            if (map.getTile(x, y).isEnemyWalkable()) {
                map.setTile(x, y, Game.Tile.pathTile);
             }
         });

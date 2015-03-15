@@ -44,7 +44,9 @@ Game.Screen.playScreen = {
 
     },
     everyTurn: function() {
-        this.ageTiles();
+        if (this._player.getBuffTotal('speed') === 0) {
+            this.ageTiles();
+        }        
     },
     exit: function() { console.log("Exited play screen."); },
     newLevel: function(level) {
@@ -277,18 +279,22 @@ Game.Screen.playScreen = {
             // Movement
             if (inputData.keyCode === ROT.VK_LEFT || 
                 inputData.keyCode === ROT.VK_H ||
+                inputData.keyCode === ROT.VK_NUMPAD4 ||
                 inputData.keyCode === ROT.VK_A) {
                 this.move(-1, 0, 0);
             } else if (inputData.keyCode === ROT.VK_RIGHT || 
                        inputData.keyCode === ROT.VK_L ||
+                       inputData.keyCode === ROT.VK_NUMPAD6 ||
                        inputData.keyCode === ROT.VK_D) {
                 this.move(1, 0, 0);
             } else if (inputData.keyCode === ROT.VK_UP || 
                        inputData.keyCode === ROT.VK_K ||
+                       inputData.keyCode === ROT.VK_NUMPAD8 ||
                        inputData.keyCode === ROT.VK_W) {
                 this.move(0, -1, 0);
             } else if (inputData.keyCode === ROT.VK_DOWN || 
                        inputData.keyCode === ROT.VK_J ||
+                       inputData.keyCode === ROT.VK_NUMPAD2 ||
                        inputData.keyCode === ROT.VK_S) {
                 this.move(0, 1, 0);
             } else if (inputData.keyCode === ROT.VK_SPACE || 
@@ -325,6 +331,7 @@ Game.Screen.playScreen = {
                 return;
             }
             // Unlock the engine
+            this.everyTurn();
             this._player.getMap().getEngine().unlock();
         } else if (inputType === 'keypress') {
             var keyChar = String.fromCharCode(inputData.charCode);
@@ -484,13 +491,25 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
 Game.Screen.TargetBasedScreen.prototype.handleInput = function(inputType, inputData) {
     // Move the cursor
     if (inputType == 'keydown') {
-        if (inputData.keyCode === ROT.VK_LEFT) {
+        if (inputData.keyCode === ROT.VK_LEFT || 
+            inputData.keyCode === ROT.VK_H ||
+            inputData.keyCode === ROT.VK_NUMPAD4 ||
+            inputData.keyCode === ROT.VK_A) {
             this.moveCursor(-1, 0);
-        } else if (inputData.keyCode === ROT.VK_RIGHT) {
+        } else if (inputData.keyCode === ROT.VK_RIGHT || 
+                   inputData.keyCode === ROT.VK_L ||
+                   inputData.keyCode === ROT.VK_NUMPAD6 ||
+                   inputData.keyCode === ROT.VK_D) {
             this.moveCursor(1, 0);
-        } else if (inputData.keyCode === ROT.VK_UP) {
+        } else if (inputData.keyCode === ROT.VK_UP || 
+                   inputData.keyCode === ROT.VK_K ||
+                   inputData.keyCode === ROT.VK_NUMPAD8 ||
+                   inputData.keyCode === ROT.VK_W) {
             this.moveCursor(0, -1);
-        } else if (inputData.keyCode === ROT.VK_DOWN) {
+        } else if (inputData.keyCode === ROT.VK_DOWN || 
+                   inputData.keyCode === ROT.VK_J ||
+                   inputData.keyCode === ROT.VK_NUMPAD2 ||
+                   inputData.keyCode === ROT.VK_S) {
             this.moveCursor(0, 1);
         } else if (inputData.keyCode === ROT.VK_ESCAPE) {
             Game.Screen.playScreen.setSubScreen(undefined);

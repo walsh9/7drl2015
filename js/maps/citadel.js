@@ -18,8 +18,6 @@ Game.Map.Citadel = function(tiles, player, level) {
             var stairPosition = this.getXBoundClearFloorPosition(0, 20);
             var playerPosition = this.getXBoundClearFloorPosition(45, 60);            
         }
-        console.log ('stairs '+ stairPosition.x + ':' + stairPosition.y)
-        console.log ('player '+ playerPosition.x + ':' + playerPosition.y)
         this._tiles.set(stairPosition.x, stairPosition.y,  Game.Tile.stairsUpTile);
         player.setX(playerPosition.x);
         player.setY(playerPosition.y);

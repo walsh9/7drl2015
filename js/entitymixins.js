@@ -206,7 +206,7 @@ Game.EntityMixins.TaskActor = {
     slimeHunt: function() {
         var player = this.getMap().getPlayer();
         var self = this;
-        if (!this.inVortex()) {
+        if (!this.inVortex() && this.getMap().getTile(this.getX(), this.getY()) !== Game.Tile.pathTile) {
             this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
         };
         // If we are adjacent to the player, then attack instead of hunting.
@@ -245,7 +245,9 @@ Game.EntityMixins.TaskActor = {
     },
     slime: function() {
         var x, y, moveOffset;
-        this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
+        if (!this.inVortex() && this.getMap().getTile(this.getX(), this.getY()) !== Game.Tile.pathTile) {
+            this.getMap().setTile(this.getX(), this.getY(), Game.Tile.snailTrailTile0);
+        };
         for (var i = 0; i < 100; i++) {
             x = this.getX();
             y = this.getY();
