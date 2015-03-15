@@ -6,12 +6,17 @@ Game.Screen.startScreen = {
     exit: function() { console.log("Exited start screen."); },
     render: function(display) {
         // Render our prompt to the screen
-        display.drawText(1,1, "The seaside city of Port Yendor has prospered for as long as you can");
-        display.drawText(1,2, "remember, thanks to the protection of the powerful %c{purple}Jewel of Zot%c{#ccc}.");
-        display.drawText(1,4, "But the %c{red}lobsterfolk%c{#ccc} have stolen the jewel and are using it for dark purposes!");
-        display.drawText(1,6, "With the help of your powerful but capricious god, you must infiltrate");
-        display.drawText(1,7, "the %c{green}Sunken Citadel%c{#ccc} and retrieve it!");
-        display.drawText(1,9, "%c{yellow}Press [Enter] to start!");
+        var y = 0;
+        display.drawText(1, y++, "The seaside city of Port Yendor has prospered for as long as you can");
+        display.drawText(1, y++, "remember, thanks to the powerful %c{#f0f}Jewel of Zot%c{#ccc}.");
+        y++;
+        display.drawText(1, y++, "But now the %c{red}lobsterfolk%c{#ccc} have stolen the jewel and are using it");
+        display.drawText(1, y++, "for dark purposes!");
+        y++;
+        display.drawText(1, y++, "With the help of your powerful but capricious god, you must infiltrate");
+        display.drawText(1, y++, "the %c{#6c9}Sunken Citadel%c{#ccc} and retrieve it!");
+        y = display.getOptions().height - 2;
+        display.drawText(1, y++, "%c{yellow}Press [Enter] to start!");
     },
     handleInput: function(inputType, inputData) {
         // When [Enter] is pressed, go to the play screen
@@ -46,7 +51,7 @@ Game.Screen.playScreen = {
         this._player.removeAbility('telepathy');
         for (var i = 0; i < 4; i++) {
             if (this._player.canAddBlessing) {
-                var blessing = Game.BlessingRepository.createRandom();
+                var blessing = Game.BlessingDeck.draw();
                 this._player.addBlessing(blessing);
             }
         }
@@ -108,7 +113,7 @@ Game.Screen.playScreen = {
         var screenHeight = Game.getScreenHeight();
         var blessings = player.getBlessings();
 
-        var headColors = '%c{green}%b{black}';
+        var headColors = '%c{#6c9}%b{black}';
         var statColors = '%c{white}%b{black}';
         var healthColors = '%c{red}%b{black}';
         var favorColors = '%c{yellow}%b{black}';
@@ -123,9 +128,8 @@ Game.Screen.playScreen = {
             healthColors + Array(player.getHp() + 1).join('+') +
             grayColors + Array(player.getMaxHp() - player.getHp() + 1).join('-');
         var favorLine = statColors + 'Favor: ' + favorColors + Array(player.getFavor() + 1).join('* ');
-        var attackLine = statColors + 'Attack:' + player.getBaseAttackValue();
-        var attackBuff = player.getBuffTotal('attack');
-        attackLine += '(' + attackBuff + ')';
+        var attackColor = player.getBuffTotal('attack') > 0 ? '%c{#0cf}' : '';
+        var attackLine = statColors + 'Attack: ' + attackColor + player.getAttackValue();
 
         s++;
         var blessingsHeader = headColors + '[B]lessings';
@@ -152,7 +156,7 @@ Game.Screen.playScreen = {
         var enemies = this._player.getVisibleTargets();
         for (var j = 0; j < enemies.length; j++) {
             var enemy = enemies[j];
-            drawStatus(s++, statColors + enemy.getName());
+            drawStatus(s++, '%c{' + enemy.getForeground() + '}' + enemy.getChar() + ' ' + statColors + enemy.getName());
             drawStatus(s++, statColors + 'HP:' + 
                 healthColors + Array(enemy.getHp() + 1).join('+') +
                 grayColors + Array(enemy.getMaxHp() - enemy.getHp() + 1).join('-'));
@@ -304,6 +308,10 @@ Game.Screen.playScreen = {
                 Game.Screen.blessingHelpScreen.setup(this._player);
                 this.setSubScreen(Game.Screen.blessingHelpScreen);
                 return;
+            } else if (inputData.keyCode === ROT.VK_E) {
+                Game.Screen.enemyHelpScreen.setup(this._player);
+                this.setSubScreen(Game.Screen.enemyHelpScreen);
+                return;
             } else {
                 // Not a valid key
                 return;
@@ -383,308 +391,32 @@ Game.Screen.winScreen = {
 
 // Define our winning screen
 Game.Screen.loseScreen = {
-    enter: function() {    console.log("Entered lose screen."); },
+    enter: function() { 
+        this._ignoredOne = false;
+        console.log("Entered lose screen."); 
+    },
     exit: function() { console.log("Exited lose screen."); },
     render: function(display) {
-        // Render our prompt to the screen
-        for (var i = 0; i < 22; i++) {
-            display.drawText(2, i + 1, "%b{red}You lose! :(");
-        }
+        var y = 1;
+        var messageColor = "%c{#ccc}"
+        display.drawText(1, y++, messageColor + "You have fallen in the %c{#6c9}Sunken Citadel%c{#ccc}.")
+        y++;
+        display.drawText(1, y++, messageColor + "Will another hero take your place?")
+        y++;
+        display.drawText(1, y++, messageColor + "Or will Port Yendor be consumed by the rising tides when")
+        display.drawText(1, y++, messageColor + "the %c{red}lobsterfolk%c{#ccc} master the %c{#f0f}Jewel of Zot%c{#ccc}'s power?")
+        y = display.getOptions().height - 2;
+        text = '[ Press any key to try again ]';
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' +text);
     },
     handleInput: function(inputType, inputData) {
-        // Nothing to do here      
-    }
-};
-
-Game.Screen.ItemListScreen = function(template) {
-    // Set up based on the template
-    this._caption = template['caption'];
-    this._okFunction = template['ok'];
-    // By default, we use the identity function
-    this._isAcceptableFunction = template['isAcceptable'] || function(x) {
-        return x;
-    }
-    // Whether the user can select items at all.
-    this._canSelectItem = template['canSelect'];
-    // Whether the user can select multiple items.
-    this._canSelectMultipleItems = template['canSelectMultipleItems'];
-    // Whether a 'no item' option should appear.
-    this._hasNoItemOption = template['hasNoItemOption'];
-};
-
-Game.Screen.ItemListScreen.prototype.setup = function(player, items) {
-    this._player = player;
-    // Should be called before switching to the screen.
-    var count = 0;
-    // Iterate over each item, keeping only the aceptable ones and counting
-    // the number of acceptable items.
-    var that = this;
-    this._items = items.map(function(item) {
-        // Transform the item into null if it's not acceptable
-        if (that._isAcceptableFunction(item)) {
-            count++;
-            return item;
+        if (this._ignoredOne) {
+            location.reload()
         } else {
-            return null;
-        }
-    });
-    // Clean set of selected indices
-    this._selectedIndices = {};
-    return count;
-};
-
-Game.Screen.ItemListScreen.prototype.render = function(display) {
-    var letters = 'abcdefghijklmnopqrstuvwxyz';
-    // Render the caption in the top row
-    display.drawText(0, 0, this._caption);
-    // Render the no item row if enabled
-    if (this._hasNoItemOption) {
-        display.drawText(0, 1, '0 - no item');
-    }
-    var row = 0;
-    for (var i = 0; i < this._items.length; i++) {
-        // If we have an item, we want to render it.
-        if (this._items[i]) {
-            // Get the letter matching the item's index
-            var letter = letters.substring(i, i + 1);
-            // If we have selected an item, show a +, else show a dash between
-            // the letter and the item's name.
-            var selectionState = (this._canSelectItem && this._canSelectMultipleItems &&
-                this._selectedIndices[i]) ? '+' : '-';
-            // Check if the item is worn or wielded
-            var suffix = '';
-            if (this._items[i] === this._player.getArmor()) {
-                suffix = ' (wearing)';
-            } else if (this._items[i] === this._player.getWeapon()) {
-                suffix = ' (wielding)';
-            }
-            // Render at the correct row and add 2.
-            display.drawText(0, 2 + row,  letter + ' ' + selectionState + ' ' +
-                this._items[i].describe() + suffix);
-            row++;
+            this._ignoredOne = true;
         }
     }
 };
-
-Game.Screen.ItemListScreen.prototype.executeOkFunction = function() {
-    // Gather the selected items.
-    var selectedItems = {};
-    for (var key in this._selectedIndices) {
-        selectedItems[key] = this._items[key];
-    }
-    // Switch back to the play screen.
-    Game.Screen.playScreen.setSubScreen(undefined);
-    // Call the OK function and end the player's turn if it return true.
-    if (this._okFunction(selectedItems)) {
-        this._player.getMap().getEngine().unlock();
-    }
-};
-Game.Screen.ItemListScreen.prototype.handleInput = function(inputType, inputData) {
-    if (inputType === 'keydown') {
-        // If the user hit escape, hit enter and can't select an item, or hit
-        // enter without any items selected, simply cancel out
-        if (inputData.keyCode === ROT.VK_ESCAPE || 
-            (inputData.keyCode === ROT.VK_RETURN && 
-                (!this._canSelectItem || Object.keys(this._selectedIndices).length === 0))) {
-            Game.Screen.playScreen.setSubScreen(undefined);
-        // Handle pressing return when items are selected
-        } else if (inputData.keyCode === ROT.VK_RETURN) {
-            this.executeOkFunction();
-        // Handle pressing zero when 'no item' selection is enabled
-        } else if (this._canSelectItem && this._hasNoItemOption && inputData.keyCode === ROT.VK_0) {
-            this._selectedIndices = {};
-            this.executeOkFunction();
-        // Handle pressing a letter if we can select
-        } else if (this._canSelectItem && inputData.keyCode >= ROT.VK_A &&
-            inputData.keyCode <= ROT.VK_Z) {
-            // Check if it maps to a valid item by subtracting 'a' from the character
-            // to know what letter of the alphabet we used.
-            var index = inputData.keyCode - ROT.VK_A;
-            if (this._items[index]) {
-                // If multiple selection is allowed, toggle the selection status, else
-                // select the item and exit the screen
-                if (this._canSelectMultipleItems) {
-                    if (this._selectedIndices[index]) {
-                        delete this._selectedIndices[index];
-                    } else {
-                        this._selectedIndices[index] = true;
-                    }
-                    // Redraw screen
-                    Game.refresh();
-                } else {
-                    this._selectedIndices[index] = true;
-                    this.executeOkFunction();
-                }
-            }
-        }
-    }
-};
-
-Game.Screen.inventoryScreen = new Game.Screen.ItemListScreen({
-    caption: 'Inventory',
-    canSelect: false
-});
-
-Game.Screen.pickupScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the items you wish to pickup',
-    canSelect: true,
-    canSelectMultipleItems: true,
-    ok: function(selectedItems) {
-        // Try to pick up all items, messaging the player if they couldn't all be
-        // picked up.
-        if (!this._player.pickupItems(Object.keys(selectedItems))) {
-            Game.sendMessage(this._player, "Your inventory is full! Not all items were picked up.");
-        }
-        return true;
-    }
-});
-
-Game.Screen.dropScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to drop',
-    canSelect: true,
-    canSelectMultipleItems: false,
-    ok: function(selectedItems) {
-        // Drop the selected item
-        this._player.dropItem(Object.keys(selectedItems)[0]);
-        return true;
-    }
-});
-
-Game.Screen.eatScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to eat',
-    canSelect: true,
-    canSelectMultipleItems: false,
-    isAcceptable: function(item) {
-        return item && item.hasMixin('Edible');
-    },
-    ok: function(selectedItems) {
-        // Eat the item, removing it if there are no consumptions remaining.
-        var key = Object.keys(selectedItems)[0];
-        var item = selectedItems[key];
-        Game.sendMessage(this._player, "You eat %s.", [item.describeThe()]);
-        item.eat(this._player);
-        if (!item.hasRemainingConsumptions()) {
-            this._player.removeItem(key);
-        }
-        return true;
-    }
-});
-
-Game.Screen.wieldScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to wield',
-    canSelect: true,
-    canSelectMultipleItems: false,
-    hasNoItemOption: true,
-    isAcceptable: function(item) {
-        return item && item.hasMixin('Equippable') && item.isWieldable();
-    },
-    ok: function(selectedItems) {
-        // Check if we selected 'no item'
-        var keys = Object.keys(selectedItems);
-        if (keys.length === 0) {
-            this._player.unwield();
-            Game.sendMessage(this._player, "You are empty handed.")
-        } else {
-            // Make sure to unequip the item first in case it is the armor.
-            var item = selectedItems[keys[0]];
-            this._player.unequip(item);
-            this._player.wield(item);
-            Game.sendMessage(this._player, "You are wielding %s.", [item.describeA()]);
-        }
-        return true;
-    }
-});
-
-Game.Screen.wearScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to wear',
-    canSelect: true,
-    canSelectMultipleItems: false,
-    hasNoItemOption: true,
-    isAcceptable: function(item) {
-        return item && item.hasMixin('Equippable') && item.isWearable();
-    },
-    ok: function(selectedItems) {
-        // Check if we selected 'no item'
-        var keys = Object.keys(selectedItems);
-        if (keys.length === 0) {
-            this._player.unwield();
-            Game.sendMessage(this._player, "You are not wearing anthing.")
-        } else {
-            // Make sure to unequip the item first in case it is the weapon.
-            var item = selectedItems[keys[0]];
-            this._player.unequip(item);
-            this._player.wear(item);
-            Game.sendMessage(this._player, "You are wearing %s.", [item.describeA()]);
-        }
-        return true;
-    }
-});
-
-Game.Screen.examineScreen = new Game.Screen.ItemListScreen({
-    caption: 'Choose the item you wish to examine',
-    canSelect: true,
-    canSelectMultipleItems: false,
-    isAcceptable: function(item) {
-        return true;
-    },
-    ok: function(selectedItems) {
-        var keys = Object.keys(selectedItems);
-        if (keys.length > 0) {
-            var item = selectedItems[keys[0]];
-            Game.sendMessage(this._player, "It's %s (%s).", 
-                [
-                    item.describeA(false),
-                    item.details()
-                ]);
-        }
-        return true;
-    }
-});
-
-Game.Screen.gainStatScreen = {
-    setup: function(entity) {
-        // Must be called before rendering.
-        this._entity = entity;
-        this._options = entity.getStatOptions();
-    },
-    render: function(display) {
-        var letters = 'abcdefghijklmnopqrstuvwxyz';
-        display.drawText(0, 0, 'Choose a stat to increase: ');
-
-        // Iterate through each of our options
-        for (var i = 0; i < this._options.length; i++) {
-            display.drawText(0, 2 + i, 
-                letters.substring(i, i + 1) + ' - ' + this._options[i][0]);
-        }
-
-        // Render remaining stat points
-        display.drawText(0, 4 + this._options.length,
-            "Remaining points: " + this._entity.getStatPoints());   
-    },
-    handleInput: function(inputType, inputData) {
-        if (inputType === 'keydown') {
-            // If a letter was pressed, check if it matches to a valid option.
-            if (inputData.keyCode >= ROT.VK_A && inputData.keyCode <= ROT.VK_Z) {
-                // Check if it maps to a valid item by subtracting 'a' from the character
-                // to know what letter of the alphabet we used.
-                var index = inputData.keyCode - ROT.VK_A;
-                if (this._options[index]) {
-                    // Call the stat increasing function
-                    this._options[index][1].call(this._entity);
-                    // Decrease stat points
-                    this._entity.setStatPoints(this._entity.getStatPoints() - 1);
-                    // If we have no stat points left, exit the screen, else refresh
-                    if (this._entity.getStatPoints() == 0) {
-                        Game.Screen.playScreen.setSubScreen(undefined);
-                    } else {
-                        Game.refresh();
-                    }
-                }
-            }
-        }
-    }
-};
-
 
 Game.Screen.TargetBasedScreen = function(template) {
     template = template || {};
@@ -846,46 +578,26 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
     }
 });
 
-Game.Screen.blessingScreen = {
-    render: function(display) {
-        var text = 'Help';
-        var border = '-------------';
-        var y = 0;
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-        display.drawText(Game.getScreenWidth() / 2 - border.length / 2, y++, border);
-        display.drawText(1, y++, 'Retrieve the Jewel of Zot from the lobsterfolk\'s Sunken Citadel!');
-        y += 3;
-        display.drawText(1, y++, 'Arrow keys, hjkl, or wasd to move.');
-        display.drawText(1, y++, '[1] through [9] to invoke your god\'s blessings');
-        display.drawText(1, y++, '[;] to look around you');
-        display.drawText(1, y++, '[?] to show this help screen');
-        y += 3;
-        text = '--- press any key to continue ---';
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-    },
-    handleInput: function(inputType, inputData) {
-        Game.Screen.playScreen.setSubScreen(null);
-    }
-};
-
 // Define our help screen
 Game.Screen.helpScreen = {
     render: function(display) {
         var text = 'Help';
-        var border = '-------------';
+        var border = '----';
         var y = 0;
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-        display.drawText(Game.getScreenWidth() / 2 - border.length / 2, y++, border);
-        display.drawText(1, y++, 'Retrieve the Jewel of Zot from the lobsterfolk\'s Sunken Citadel!');
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, text);
+        display.drawText((Game.getScreenWidth() + 20) / 2 - border.length / 2, y++, border);
+        display.drawText(1, y++, 'Retrieve the %c{#f0f}Jewel of Zot%c{#ccc} from the %c{red}lobsterfolks\'%c{#ccc} %c{#6c9}Sunken Citadel!%c{#ccc}');
         y += 3;
         display.drawText(1, y++, 'Arrow keys, hjkl, or wasd to move.');
         display.drawText(1, y++, '[1] through [9] to invoke your god\'s blessings');
         display.drawText(1, y++, '[;] to look around you');
+        display.drawText(1, y++, '[b] to show descriptions of blessings');
+        display.drawText(1, y++, '[e] to show descriptions of enemies');
         display.drawText(1, y++, '[?] to show this help screen');
-        y += 3;
-        text = '--- press any key to continue ---';
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-    },
+        y = display.getOptions().height - 2;
+        text = '[ Press any key to continue ]';
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' + text);
+   },
     handleInput: function(inputType, inputData) {
         Game.Screen.playScreen.setSubScreen(null);
     }
@@ -905,17 +617,52 @@ Game.Screen.blessingHelpScreen = {
         var blessingColors = '%c{yellow}';
         var descriptionColors = '%c{white}';
         var blessings = this._entity.getBlessings();
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
-        display.drawText(Game.getScreenWidth() / 2 - border.length / 2, y++, border);
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, text);
+        display.drawText((Game.getScreenWidth() + 20) / 2 - border.length / 2, y++, border);
         y += 1;
         for (var i = 0; i < blessings.length; i++) {
             var blessing = blessings[i];
-            display.drawText(1, y++, blessingColors + blessing.name)
+            display.drawText(1, y++, descriptionColors + (1 + i) + '. ' + blessingColors + blessing.name)
             display.drawText(5, y++, descriptionColors + blessing.description)
         }
-        y = display.getOptions().height - 1;
-        text = '--- Press any key to continue ---';
-        display.drawText(Game.getScreenWidth() / 2 - text.length / 2, y++, text);
+        y = display.getOptions().height - 2;
+        text = '[ Press any key to continue ]';
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' + text);
+    },
+    handleInput: function(inputType, inputData) {
+        if (this._ignoredOne) {
+            Game.Screen.playScreen.setSubScreen(null);
+        } else {
+            this._ignoredOne = true;
+        }
+    }
+};
+
+// Define our enemy help screen
+Game.Screen.enemyHelpScreen = {
+    setup: function(entity) {
+        // Must be called before rendering.
+        this._entity = entity;
+        this._ignoredOne = false; 
+    },
+    render: function(display) {
+        var text = 'Nearby Enemies';
+        var border = '--------------';
+        var y = 0;
+        var enemyColors = '%c{yellow}';
+        var descriptionColors = '%c{white}';
+        var enemies = this._entity.getVisibleTargets();
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, text);
+        display.drawText((Game.getScreenWidth() + 20) / 2 - border.length / 2, y++, border);
+        y += 1;
+        for (var i = 0; i < enemies.length; i++) {
+            var enemy = enemies[i];
+            display.drawText(1, y++, '%c{' + enemy.getForeground() + '}' + enemy.getChar() + enemyColors + ' - ' + enemy.getName())
+            display.drawText(5, y++, descriptionColors + enemy.getDescription())
+        }
+        y = display.getOptions().height - 2;
+        text = '[ Press any key to continue ]';
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' + text);
     },
     handleInput: function(inputType, inputData) {
         if (this._ignoredOne) {

@@ -7,6 +7,7 @@ Game.Entity = function(properties) {
     this._y = properties['y'] || 0;
     this._map = null;
     this._alive = true;
+    this._description = properties['description'] || '';
     // Acting speed
     this._speed = properties['speed'] || 1000;
 };
@@ -45,6 +46,10 @@ Game.Entity.prototype.getY   = function() {
 Game.Entity.prototype.getMap = function() {
     return this._map;
 };
+Game.Entity.prototype.getDescription = function() {
+    return this._description;
+};
+
 Game.Entity.prototype.getSpeed = function() {
     return this._speed;
 };

@@ -45,7 +45,7 @@ Game.Tile.floorTile = new Game.Tile({
 });
 
 (function() {
-    var snailTrailDuration = 20;
+    var snailTrailDuration = 16;
     Game.Tile.snailTrailTile = {};
     for (var i = 0; i < snailTrailDuration; i++) {
         Game.Tile['snailTrailTile' + i] = new Game.Tile({
@@ -57,17 +57,13 @@ Game.Tile.floorTile = new Game.Tile({
             description: 'Toxic slime',
             action: function(target) {
                 // Only toxic to the player :o
-                console.log(target)
                 if (target.getChar() === '@') {
                     var slimeDamage = 1;
                     if (target.hasMixin('buffGetter')) {
                         slimeDamage = Math.max(slimeDamage - target.getBuffTotal('defense'), 0)
                     }
                     Game.sendMessage(target, 'The toxic slime burns you for ' + slimeDamage + ' damage!');
-                    console.log(target.getHp());
                     target.takeDamage(null, slimeDamage);
-                    console.log(slimeDamage);
-                    console.log(target.getHp());
                 }
             }
 

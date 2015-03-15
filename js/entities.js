@@ -16,50 +16,54 @@ Game.PlayerTemplate = {
 // Create our central entity repository
 Game.EntityRepository = new Game.Repository('entities', Game.Entity);
 
-Game.EntityRepository.define('lobsterfolk knight', {
-    name: 'lobster knight',
+Game.EntityRepository.define('lobsterknight', {
+    name: 'lobsterknight',
     character: 'L',
     foreground: 'red',
     maxHp: 3,
     defenseValue: 1,
     sightRadius: 5,
     tasks: ['hunt', 'wander'],
+    description: 'Their hard shells block 1 point of damage.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
 });
 
-Game.EntityRepository.define('lobsterfolk hatchling', {
-    name: 'lobster hatchling',
+Game.EntityRepository.define('hatchling', {
+    name: 'hatchling',
     character: 'l',
     foreground: 'red',
     maxHp: 3,
     sightRadius: 5,
     tasks: ['hunt', 'wander'],
+    description: 'Their shells are still soft.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
 });
 
 Game.EntityRepository.define('mercenary crabfolk x', {
-    name: 'mercenary crabfolk',
+    name: 'crabfolk merc',
     character: 'u',
-    foreground: 'blue',
+    foreground: 'cyan',
     maxHp: 3,
     sightRadius: 5,
     tasks: ['huntX', 'wanderX'],
+    description: 'Can only walk sideways.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
 });
 
 Game.EntityRepository.define('mercenary crabfolk y', {
-    name: 'mercenary crabfolk',
+    name: 'crabfolk merc',
     character: 'c',
-    foreground: 'blue',
+    foreground: 'cyan',
     maxHp: 3,
     sightRadius: 5,
     tasks: ['huntY', 'wanderY'],
+    description: 'Can only walk sideways.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]
@@ -70,10 +74,11 @@ Game.EntityRepository.define('guard snail', {
     character: 's',
     foreground: 'green',
     speed: 500,
-    maxHp: 4,
+    maxHp: 3,
     defenseValue: 1,
     sightRadius: 5,
     tasks: ['slimeHunt', 'slime'],
+    description: 'Hard shell. Leaves toxic slime trails. Slow.',
     mixins: [Game.EntityMixins.TaskActor, Game.EntityMixins.Sight,
              Game.EntityMixins.Attacker, Game.EntityMixins.Destructible,
              Game.EntityMixins.CorpseDropper]

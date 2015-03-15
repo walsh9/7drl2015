@@ -213,8 +213,13 @@ Game.EntityMixins.BuffGetter = {
     },
     addBuff: function(type, amount, duration, name, isUnique, removeMessage) {
         for (var i=0; i < this._buffs.length; i++) {
-            if (isUnique && this._buffs[i].name === name) {
-                return false;
+            if (this._buffs[i].name === name) {
+                if (isUnique) {
+                    return false;
+                } else {
+                    this._buffs[i].duration += duration;
+                    return true;
+                }
             }
         }
         this._buffs.push({type: type,
@@ -388,12 +393,11 @@ Game.EntityMixins.Destructible = {
         }
         // If have 0 or less HP, then remove ourseles from the map
         if (this._hp <= 0) {
-            Game.sendMessage(attacker, 'You kill the %s!', [this.getName()]);
-            // Raise events
-            this.raiseEvent('onDeath', attacker);
             if (attacker) {
+                Game.sendMessage(attacker, 'You kill the %s!', [this.getName()]);
                 attacker.raiseEvent('onKill', this);
             }
+            this.raiseEvent('onDeath', attacker);
             this.kill();
         } else if (damage > 0) {
             this.raiseEvent('onDamageTaken', attacker);
@@ -548,7 +552,7 @@ Game.EntityMixins.Pious = {
         }        return false;
     },
     removeBlessing: function(i) {
-        this._blessings.splice(i, 1);
+        Game.BlessingDeck.discard(this._blessings.splice(i, 1)[0]);
     },
     canAddBlessing: function() {
         return this._blessings.length < this._blessingSlots;
@@ -558,7 +562,6 @@ Game.EntityMixins.Pious = {
         if (this._favor >= blessing.favorCost) {
             this._favor -= blessing.favorCost;
             this.removeBlessing(n - 1);
-            console.log(blessing);
             Game.sendMessage(this, blessing.message);
             blessing.action(this);
         } else
