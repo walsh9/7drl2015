@@ -49,7 +49,8 @@ Game.Screen.playScreen = {
         this._player.setFavor(3);
         this._player.setHp(this._player.getMaxHp());
         this._player.removeAbility('telepathy');
-        for (var i = 0; i < 4; i++) {
+        var newFavors = (level === 1) ? 4 : 3;
+        for (var i = 0; i < newFavors; i++) {
             if (this._player.canAddBlessing) {
                 var blessing = Game.BlessingDeck.draw();
                 this._player.addBlessing(blessing);
@@ -60,7 +61,7 @@ Game.Screen.playScreen = {
         var height = 40;
         // Create our map from the tiles and player
         var tiles = new Game.Builder(width, height).getTiles();
-        var map = new Game.Map.Citadel(tiles, this._player);
+        var map = new Game.Map.Citadel(tiles, this._player, level);
         // Start the map's engine
         map.getEngine().start();
 

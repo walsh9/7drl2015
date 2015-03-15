@@ -98,6 +98,17 @@ Game.Tile.stairsUpTile = new Game.Tile({
     }
 });
 
+Game.Tile.jewelOfZot = new Game.Tile({
+    character: '*',
+    foreground: '#f0f',
+    walkable: false,
+    blocksLight: false,
+    description: 'The %c{f0f}Jewel of Zot',
+    action: function() {
+        Game.switchScreen(Game.Screen.winScreen);
+    }
+});
+
 Game.Tile.waterTile = new Game.Tile({
     character: '~',
     foreground: 'blue',
