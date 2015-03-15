@@ -121,7 +121,7 @@ Game.BlessingRepository.define("Thirst", {
 
 Game.BlessingRepository.define("Vortex Ward", {
     name: "Vortex Ward",
-    description: "Create a 3 x 3 vortex around you that enemies cannot pass.",    
+    description: "Create a 3 x 3 vortex around you that enemies cannot pass. Can dig walls.",    
     message: "The waters around you swirl in arcane patterns.",
     action: function(player) {
         var x = player.getX();
@@ -130,7 +130,8 @@ Game.BlessingRepository.define("Vortex Ward", {
         tiles.push({x: x, y: y});
         for (var i = 0; i <  tiles.length; i++) {
             var tile = tiles[i];
-            if (player.getMap().getTile(tile.x, tile.y).isWalkable()) { 
+            if (player.getMap().getTile(tile.x, tile.y).isWalkable() ||
+                player.getMap().getTile(tile.x, tile.y) === Game.Tile.wallTile) { 
                 player.getMap().setTile(tile.x, tile.y, Game.Tile.vortexTile);
             }
         };       
