@@ -598,9 +598,10 @@ Game.Screen.helpScreen = {
         display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, text);
         display.drawText((Game.getScreenWidth() + 20) / 2 - border.length / 2, y++, border);
         display.drawText(1, y++, 'Retrieve the %c{#f0f}Jewel of Zot%c{#ccc} from the %c{red}lobsterfolks\'%c{#ccc} %c{#6c9}Sunken Citadel!%c{#ccc}');
-        y += 2;
+        y ++;
         display.drawText(1, y++, 'Controls:');
         display.drawText(1, y++, 'Arrow keys, hjkl, or wasd to move.');
+        display.drawText(1, y++, '[Space] or [.] to wait.');
         display.drawText(1, y++, '[1 - 9] to invoke your god\'s blessings');
         display.drawText(1, y++, '[;] to look around you');
         display.drawText(1, y++, '[b] to show descriptions of blessings');
