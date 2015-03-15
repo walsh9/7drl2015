@@ -33,12 +33,12 @@ Game.Screen.startScreen = {
 // Define our playing screen
 Game.Screen.playScreen = {
     _player: null,
-    _level: 1,
+    _level: 7,
     _gameEnded: false,
     _subScreen: null,
     enter: function() {
         this._player = new Game.Entity(Game.PlayerTemplate);
-        this.newLevel(1);
+        this.newLevel(this._level);
     },
     initGame: function() {
 

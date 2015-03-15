@@ -49,6 +49,14 @@ Game.Tile.floorTile = new Game.Tile({
     description: 'A smooth tiled floor'
 });
 
+Game.Tile.zotFloorTile = new Game.Tile({
+    character: '.',
+    foreground: '#c0c',
+    walkable: true,
+    blocksLight: false,
+    description: 'A smooth tiled floor'
+});
+
 (function() {
     var snailTrailDuration = 14;
     Game.Tile.snailTrailTile = {};
@@ -81,7 +89,7 @@ Game.Tile.pathTile = new Game.Tile({
     foreground: 'cyan',
     walkable: true,
     blocksLight: false,
-    description: 'A strong current.'
+    description: 'A strong current'
 });
 
 Game.Tile.wallTile = new Game.Tile({

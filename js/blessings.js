@@ -76,8 +76,14 @@ Game.BlessingRepository.define("Guiding Tide", {
     action: function(player) {
         var map = player.getMap();
         var stairs = map.findTile('<')[0];
+        if (stairs === undefined){
+            stairs = map.findTile('*')[0];
+        }
+        console.log(stairs);
         var passableCallback = function(x, y) {
-            return (map.getTile(x,y).isWalkable() || map.getTile(x,y) == Game.Tile.stairsUpTile);
+            return (map.getTile(x,y).isWalkable() || 
+                map.getTile(x,y) == Game.Tile.stairsUpTile || 
+                map.getTile(x,y) == Game.Tile.jewelOfZot);
         };
         map.getTile(stairs.x, stairs.y)
         var p = {x: player.getX(), y: player.getY()}

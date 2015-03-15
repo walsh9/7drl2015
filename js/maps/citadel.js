@@ -25,7 +25,12 @@ Game.Map.Citadel = function(tiles, player, level) {
     } else {
         var jewelPosition = this.getXBoundClearFloorPosition(40, 60);
         var playerPosition = this.getXBoundClearFloorPosition(0, 15);            
-        this._tiles.set(jewelPosition.x, jewelPosition.y,  Game.Tile.jewelOfZot);        
+        this._tiles.set(jewelPosition.x, jewelPosition.y,  Game.Tile.jewelOfZot);
+        var pedestalTiles = Game.getNeighborPositions(jewelPosition.x, jewelPosition.y);
+        for (i = 0; i < pedestalTiles.length; i++) {
+            var pedestalTile = pedestalTiles[i];
+            this._tiles.set(pedestalTile.x, pedestalTile.y, Game.Tile.zotFloorTile);
+        };
         player.setX(playerPosition.x);
         player.setY(playerPosition.y);
         this.addEntity(player);
