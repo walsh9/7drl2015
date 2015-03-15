@@ -372,21 +372,29 @@ Game.Screen.playScreen = {
 
 // Define our winning screen
 Game.Screen.winScreen = {
-    enter: function() { console.log("Entered win screen."); },
+    enter: function() {
+        this._ignoredOne = false;
+        console.log("Entered win screen."); 
+    },
     exit: function() { console.log("Exited win screen."); },
     render: function(display) {
-        // Render our prompt to the screen
-        for (var i = 0; i < 22; i++) {
-            // Generate random background colors
-            var r = Math.round(Math.random() * 255);
-            var g = Math.round(Math.random() * 255);
-            var b = Math.round(Math.random() * 255);
-            var background = ROT.Color.toRGB([r, g, b]);
-            display.drawText(2, i + 1, "%b{" + background + "}You win!");
-        }
+        var y = 1;
+        var messageColor = "%c{#ccc}"
+        display.drawText(1, y++, messageColor + "You grab the %c{f0f}Jewel of Zot%c{#ccc} and escape to the surface.")
+        y++;
+        display.drawText(1, y++, messageColor + "Congratulations!")
+        y++;
+        display.drawText(1, y++, messageColor + "The citizens of Port Yendor can rest easy once again.")
+        y = display.getOptions().height - 2;
+        text = '[ Press any key to play again ]';
+        display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' +text);
     },
     handleInput: function(inputType, inputData) {
-        // Nothing to do here      
+        if (this._ignoredOne) {
+            location.reload()
+        } else {
+            this._ignoredOne = true;
+        }
     }
 };
 
