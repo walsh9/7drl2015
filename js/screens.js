@@ -652,6 +652,7 @@ Game.Screen.helpScreen = {
         display.drawText(1, y++, '4. Each Blessing costs 1 favor to invoke.');
         display.drawText(1, y++, '5. Blessings are powerful, but you can only use 3 per level. Choose wisely.');
         display.drawText(1, y++, '6. Levi favors those who progress. Health and favor are restored each Level.');
+        display.drawText(1, y++, '7. New blessings become available each level.');
         y = display.getOptions().height - 2;
         text = '[ Press any key to continue ]';
         display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' + text);
