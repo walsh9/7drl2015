@@ -358,6 +358,7 @@ Game.Screen.playScreen = {
                 return;
             } else if (keyChar === '?') {
                 // Setup the look screen.
+                Game.Screen.helpScreen.setup();
                 this.setSubScreen(Game.Screen.helpScreen);
                 return;
             } else {
@@ -623,6 +624,10 @@ Game.Screen.lookScreen = new Game.Screen.TargetBasedScreen({
 
 // Define our help screen
 Game.Screen.helpScreen = {
+    setup: function() {
+        // Must be called before rendering.
+        this._ignoredOne = false; 
+    },
     render: function(display) {
         var text = 'Help';
         var border = '----';
@@ -652,7 +657,11 @@ Game.Screen.helpScreen = {
         display.drawText((Game.getScreenWidth() + 20) / 2 - text.length / 2, y++, '%c{yellow}' + text);
    },
     handleInput: function(inputType, inputData) {
-        Game.Screen.playScreen.setSubScreen(null);
+        if (this._ignoredOne) {
+            Game.Screen.playScreen.setSubScreen(null);
+        } else {
+            this._ignoredOne = true;
+        }
     }
 };
 
