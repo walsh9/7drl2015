@@ -28,7 +28,7 @@ Game.Screen.startScreen = {
 // Define our playing screen
 Game.Screen.playScreen = {
     _player: null,
-    _level: 7,
+    _level: 1,
     _gameEnded: false,
     _subScreen: null,
     _ignoredOne: false,
