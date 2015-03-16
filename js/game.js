@@ -13,7 +13,7 @@ var Game =  {
 
         var hammertime = new Hammer(document.body, {domEvents: true});
         hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL, velocity: 0.1 });
-        hammertime.get('tap').set({ interval: 0});
+        hammertime.get('tap').set({ interval: 0, time: 400});
 
         this._display = new ROT.Display(options);
         // Create a helper function for binding to an event
