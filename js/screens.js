@@ -18,15 +18,10 @@ Game.Screen.startScreen = {
         y++;
         y++;
         y = display.getOptions().height - 2;
-        display.drawText(1, y++, "%c{yellow}Press [Enter] to start!");
+        display.drawText(1, y++, "%c{yellow}Press any key to start!");
     },
     handleInput: function(inputType, inputData) {
-        // When [Enter] is pressed, go to the play screen
-        if (inputType === 'keydown') {
-            if (inputData.keyCode === ROT.VK_RETURN) {
-                Game.switchScreen(Game.Screen.playScreen);
-            }
-        }
+        Game.switchScreen(Game.Screen.playScreen);
     }
 };
 
@@ -275,7 +270,23 @@ Game.Screen.playScreen = {
             this._subScreen.handleInput(inputType, inputData);
             return;
         }
-        if (inputType === 'keydown') {
+        if (inputType === 'swipeleft') {
+            this.move(-1, 0);
+            this.everyTurn();
+            this._player.getMap().getEngine().unlock();
+        } else if (inputType === 'swiperight') {
+            this.move(1, 0);
+            this.everyTurn();
+            this._player.getMap().getEngine().unlock();
+        } else if (inputType === 'swipeup') {
+            this.move(0, -1);
+            this.everyTurn();
+            this._player.getMap().getEngine().unlock();
+        } else if (inputType === 'swipedown') {
+            this.move(0, 1);
+            this.everyTurn();
+            this._player.getMap().getEngine().unlock();
+        } else if (inputType === 'keydown') {
             // Movement
             if (inputData.keyCode === ROT.VK_LEFT || 
                 inputData.keyCode === ROT.VK_H ||

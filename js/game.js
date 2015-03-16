@@ -11,6 +11,9 @@ var Game =  {
             fontFamily: '"Droid Sans Mono", monospace',
         }
 
+        var hammertime = new Hammer(document.body, {domEvents: true});
+        hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL, velocity: 0.1 });
+
         this._display = new ROT.Display(options);
         // Create a helper function for binding to an event
         // and making it send it to the screen
@@ -22,6 +25,7 @@ var Game =  {
                 if (game._currentScreen !== null) {
                     // Send the event type and data to the screen
                     game._currentScreen.handleInput(event, e);
+                    console.log(e);
                 }
             });
         };
@@ -29,6 +33,67 @@ var Game =  {
         bindEventToScreen('keydown');
         //bindEventToScreen('keyup');
         bindEventToScreen('keypress');
+        //bindEventToScreen('keyup');
+        bindEventToScreen('tap');
+        bindEventToScreen('swipeleft');
+        bindEventToScreen('swiperight');
+        bindEventToScreen('swipeup');
+        bindEventToScreen('swipedown');
+        document.querySelector('.keyboard').addEventListener('click', function(e) {
+            document.querySelector('.keyboard').className = "hidden";
+            document.querySelector('#touchcontrols').className = "";
+        });
+        document.querySelector('.bh').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_H})
+        });
+        document.querySelector('.bj').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_J})
+        });
+        document.querySelector('.bk').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_K})
+        });
+        document.querySelector('.bl').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_L})
+        });
+        document.querySelector('.bp').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_PERIOD})
+        });
+        document.querySelector('.b1').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_1})
+        });
+        document.querySelector('.b2').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_2})
+        });
+        document.querySelector('.b3').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_3})
+        });
+        document.querySelector('.b4').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_4})
+        });
+        document.querySelector('.b5').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_5})
+        });
+        document.querySelector('.b6').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_6})
+        });
+        document.querySelector('.b7').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_7})
+        });
+        document.querySelector('.b8').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_8})
+        });
+        document.querySelector('.b9').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_9})
+        });
+        document.querySelector('.bq').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keypress', {keyChar: '?'})
+        });
+        document.querySelector('.bb').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_B})
+        });
+        document.querySelector('.be').addEventListener('click', function(e) {
+            game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_E})
+        });
     },
 	getDisplay: function() {
 		return this._display;
