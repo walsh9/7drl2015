@@ -31,6 +31,7 @@ Game.Screen.playScreen = {
     _level: 7,
     _gameEnded: false,
     _subScreen: null,
+    _ignoredOne: false,
     enter: function() {
         this._player = new Game.Entity(Game.PlayerTemplate);
         this.newLevel(this._level);
@@ -259,10 +260,11 @@ Game.Screen.playScreen = {
     handleInput: function(inputType, inputData) {
         // If the game is over, enter will bring the user to the losing screen.
         if (this._gameEnded) {
-            if (inputType === 'keydown' && inputData.keyCode === ROT.VK_RETURN) {
+            if (this._ignoredOne) {
                 Game.switchScreen(Game.Screen.loseScreen);
+            } else {
+                this._ignoredOne = true;
             }
-            // Return to make sure the user can't still play
             return;
         }
         // Handle subscreen input if there is one

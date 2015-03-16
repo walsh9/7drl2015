@@ -15,7 +15,7 @@ Game.EntityMixins.PlayerActor = {
         if (!this.isAlive()) {
             Game.Screen.playScreen.setGameEnded(true);
             // Send a last message to the player
-            Game.sendMessage(this, 'Press [Enter] to continue!');
+            Game.sendMessage(this, 'Press any key to continue!');
         }
         // Re-render the screen
         Game.refresh();
