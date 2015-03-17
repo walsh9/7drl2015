@@ -42,3 +42,9 @@ http://walsh9.github.io/7drl2015/
 * Bug fixing. 
 * Add touchscreen controls. 
 * Game finished around 10:40 pm.
+
+## POST 7DRL Changelog
+### 1.1
+* Text fixes
+* Buff healing from Swell to 4HP.
+* Increase size of Vortex Ward a bit and make it push adjacent enemies.

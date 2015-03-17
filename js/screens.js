@@ -52,8 +52,6 @@ Game.Screen.playScreen = {
         this._player.removeAbility('zapOnHit');
         this._player.removeAbility('healOnKill');
         this._player.removeBuffByName('Coursing Power');
-
-
         var newFavors = (level === 1) ? 4 : 3;
         for (var i = 0; i < newFavors; i++) {
             if (this._player.canAddBlessing) {
@@ -69,7 +67,9 @@ Game.Screen.playScreen = {
         var map = new Game.Map.Citadel(tiles, this._player, level);
         // Start the map's engine
         map.getEngine().start();
-
+        if (level !== 1) {
+            Game.sendMessage(this._player, "Levi heals your wounds and offers you new blessings.")
+        }
     },
     render: function(display) {
         // Render subscreen if there is one
@@ -130,7 +130,7 @@ Game.Screen.playScreen = {
 
         var locationLine = headColors + 'Sunken Citadel'
         var levelLine = statColors + 'Level: ' + this._level;
-        var hpLine = statColors + 'HP:' +
+        var hpLine = statColors + 'HP: ' +
             healthColors + Array(player.getHp() + 1).join('+') +
             grayColors + Array(player.getMaxHp() - player.getHp() + 1).join('-');
         var favorLine = statColors + 'Favor: ' + favorColors + Array(player.getFavor() + 1).join('* ');
@@ -163,7 +163,7 @@ Game.Screen.playScreen = {
         for (var j = 0; j < enemies.length; j++) {
             var enemy = enemies[j];
             drawStatus(s++, '%c{' + enemy.getForeground() + '}' + enemy.getChar() + ' ' + statColors + enemy.getName());
-            drawStatus(s++, statColors + 'HP:' + 
+            drawStatus(s++, statColors + 'HP: ' + 
                 healthColors + Array(enemy.getHp() + 1).join('+') +
                 grayColors + Array(enemy.getMaxHp() - enemy.getHp() + 1).join('-'));
         }
