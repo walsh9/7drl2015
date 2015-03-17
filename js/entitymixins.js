@@ -403,7 +403,7 @@ Game.EntityMixins.Attacker = {
             }
         },
         details: function() {
-            return [{key: 'attack', value: this.getAttackValue()}];
+            return [{key: 'Attack', value: this.getAttackValue()}];
         }
     }
 };
@@ -479,8 +479,8 @@ Game.EntityMixins.Destructible = {
     listeners: {
         details: function() {
             return [
-                {key: 'defense', value: this.getDefenseValue()},
-                {key: 'hp', value: this.getHp()}
+                {key: 'Defense', value: this.getDefenseValue()},
+                {key: 'HP', value: this.getHp()}
             ];
         }
     }

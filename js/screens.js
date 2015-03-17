@@ -494,7 +494,10 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
 
     // Render stars along the line.
     for (var i = 0, l = points.length; i < l; i++) {
-        display.drawText(points[i].x, points[i].y, '%c{magenta}*');
+        display.drawText(points[i].x, points[i].y, '%c{#off}o');
+        if (i === points.length - 1) {
+            display.drawText(points[i].x, points[i].y, '%c{#off}O');            
+        }
     }
 
     // Render the caption at the bottom.
