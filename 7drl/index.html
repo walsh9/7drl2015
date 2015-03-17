@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" type="text/css">
+    <link rel="stylesheet" href="octicons/octicons.css" type="text/css">
+    <script src="js/hammer.min.js"></script>
+    <script src="js/rot.min.js"></script>
+    <script src="js/sprintf.min.js"></script>
+    <script src="js/array2d.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/geometry.js"></script>
+    <script src="js/utilities.js"></script>
+    <script src="js/screens.js"></script>
+    <script src="js/glyph.js"></script>
+    <script src="js/dynamicglyph.js"></script>
+    <script src="js/tile.js"></script>
+    <script src="js/builder.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/entity.js"></script>
+    <script src="js/entitymixins.js"></script>
+    <script src="js/repository.js"></script>
+    <script src="js/deck.js"></script>
+    <script src="js/blessing.js"></script>
+    <script src="js/blessings.js"></script>
+    <script src="js/entities.js"></script>
+    <script src="js/maps/citadel.js"></script>
+    <style>
+        body {
+            background: black;
+            text-align: center;
+        }
+        canvas {
+            display:block;
+            margin: auto;
+        }
+        h1 {
+            color: #eee;
+            font-family: "Droid Sans Mono", monospace;
+            font-size: 18px;
+            display: block;
+            margin: auto;
+            margin-bottom: 10px;
+        }
+        .githublink {
+            position: absolute;
+            top: 10px;
+            right: 7px;
+            color: #333;
+        }
+        .githublink:hover, .githublink:active {
+            color: #fff;
+            -webkit-transition: all 1s;
+            transition: all 1s;
+        }
+        .hint {
+            font-family: "Droid Sans Mono", monospace;
+            color: #333;
+        }
+        button {
+            text-align: center;
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            margin: 6px 6px;
+            padding: 0;
+            background: #333;
+            color: #eee;
+            font-family: "Droid Sans Mono", monospace;
+            font-size: 18px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        button:active {
+            background: #555;
+        }
+        button .mega-octicon {
+            width: 64px;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+        .hidden {
+            display:none;
+        }
+        .keyboard {
+            color: #333;
+            background: #000;
+            border: none;
+            width: auto;
+            border-radius: 2px;
+        }
+        .keyboard:active {
+             background: #222;           
+        }
+    </style>
+    <title>Chitinous Crooks</title>
+</head>
+<body>
+    <h1>Chitinous Crooks</h1>
+    <a class="githublink" title="View Source on GitHub" href="https://github.com/walsh9/7drl2015"><span class="mega-octicon octicon-mark-github"></span></a>
+    <div id="game"></div>
+    <div id="touchcontrols" class="hidden">
+        <div class="buttonrow">
+            <button class="bh"><span class="mega-octicon octicon-arrow-left"></span></button>
+            <button class="bj"><span class="mega-octicon octicon-arrow-down"></span></button>
+            <button class="bk"><span class="mega-octicon octicon-arrow-up"></span></button>
+            <button class="bl"><span class="mega-octicon octicon-arrow-right"></span></button>
+            <button class="bp">.</button>
+            <button class="bq">?</button>
+            <button class="bb">B</button>
+            <button class="be">E</button>
+        </div>
+        <div class="buttonrow">
+            <button class="b1">1</button>
+            <button class="b2">2</button>
+            <button class="b3">3</button>
+            <button class="b4">4</button>
+            <button class="b5">5</button>
+            <button class="b6">6</button>
+            <button class="b7">7</button>
+            <button class="b8">8</button>
+            <button class="b9">9</button>
+        </div>
+    </div>
+    <div class="hint">Press [?] for help</div>
+    <button class="keyboard"><span class="mega-octicon octicon-keyboard"></span>Show Touch Controls </button>
+
+
+</body>
+</html>
