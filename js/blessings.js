@@ -189,8 +189,6 @@ Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Thirst"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Thirst"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Overflowing"));
-Game.BlessingDeck.add(Game.BlessingRepository.create("Overflowing"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.shuffle()
