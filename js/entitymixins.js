@@ -313,11 +313,16 @@ Game.EntityMixins.BuffGetter = {
             if (this._buffs[i].type === type) {
                 this._buffs[i].duration -= 1;
                 if (this._buffs[i].duration === 0) {
-                    //hacky special case
+                    //hacky special cases
                     if (this._buffs[i].name === "Bubble Shield") {
                         this.setChar('@');
                     }
-                    Game.sendMessage(this, this._buffs[i].removeMessage);
+                    if (this._buffs[i].name === "Flow Into Time") {
+                        this.removeBuffByName('Cancel damage during FIT');
+                    }
+                    if (this._buffs[i].removeMessage) {
+                        Game.sendMessage(this, this._buffs[i].removeMessage);
+                    }
                     this._buffs.splice(i, 1);
                 };
             }
@@ -326,7 +331,9 @@ Game.EntityMixins.BuffGetter = {
     removeBuffByName: function(name) {
         for (var i = 0; i < this._buffs.length; i++) {
             if (this._buffs[i].name == name) {
-                Game.sendMessage(this, this._buffs[i].removeMessage);
+                if (this._buffs[i].removeMessage) {
+                    Game.sendMessage(this, this._buffs[i].removeMessage);
+                }
                 this._buffs.splice(i, 1);
                 return true;
             }
@@ -366,7 +373,7 @@ Game.EntityMixins.Attacker = {
         if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
             modifier += this.getBuffTotal('attack');
         }
-        return this._attackValue + modifier;
+        return Math.max(this._attackValue + modifier, 0);
     },
     attack: function(target) {
         // If the target is destructible, calculate the damage

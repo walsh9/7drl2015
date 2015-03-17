@@ -108,11 +108,12 @@ Game.BlessingRepository.define("Bubble Shield", {
                                 
 Game.BlessingRepository.define("Flow Into Time", {
     name: "Flow Into Time",
-    description: "Take 5 free turns.",    
+    description: "Take 8 free turns, but your attack drops to 0.",    
     message: "A swift current guides your movements.",
     action: function(player) {
         player.addAbility('speed')
-        player.addBuff('speed', 1, 5, "Flow Into Time", false, "Your speed returns to normal.");   //not done     
+        player.addBuff('speed', 1, 8, "Flow Into Time", false, "Your speed returns to normal.");
+        player.addBuff('attack', -10, 8, "Cancel damage during FIT", false);
     }
 });
 
