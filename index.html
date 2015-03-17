@@ -48,6 +48,8 @@
             top: 10px;
             right: 7px;
             color: #333;
+            -webkit-transition: all 1s;
+            transition: all 1s;
         }
         .githublink:hover, .githublink:active {
             color: #fff;
@@ -57,6 +59,23 @@
         .hint {
             font-family: "Droid Sans Mono", monospace;
             color: #333;
+        }
+        .message {
+            font-family: "Droid Sans Mono", monospace;
+            color: #555; 
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+        .message a {
+            color: #777;
+            text-decoration: none;
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+        .message a:hover {
+            background: #333;
+            -webkit-transition: all 1s;
+            transition: all 1s;
         }
         button {
             text-align: center;
@@ -124,9 +143,12 @@
             <button class="b8">8</button>
             <button class="b9">9</button>
         </div>
+        <p class="hint">You can also swipe left, right, up, or down to move.</p>
     </div>
-    <div class="hint">Press [?] for help</div>
+    <p class="hint">Press [?] for help</p>
     <button class="keyboard"><span class="mega-octicon octicon-keyboard"></span>Show Touch Controls </button>
+    <p class="message">This is version 1.1, with some bugfixes and <a href="https://github.com/walsh9/7drl2015#11">other changes</a>.</p>
+    <p class="message">For the original 7DRL release, <a href="7drl/">click here</a>.</p>
 
 
 </body>
