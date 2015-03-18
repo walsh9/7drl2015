@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" type="text/css">
     <link rel="stylesheet" href="octicons/octicons.css" type="text/css">
     <script src="js/hammer.min.js"></script>
@@ -30,18 +31,22 @@
         body {
             background: black;
             text-align: center;
+            touch-action: auto;
         }
         canvas {
-            display:block;
+            width: 300px;
+            display: block;
             margin: auto;
-        }
+            border: 1px solid #333;
+            touch-action: pan-x pan-y;
+        }     
         h1 {
             color: #eee;
             font-family: "Droid Sans Mono", monospace;
             font-size: 18px;
             display: block;
             margin: auto;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .githublink {
             position: absolute;
@@ -77,12 +82,15 @@
             -webkit-transition: all 1s;
             transition: all 1s;
         }
+        #touchcontrols {
+            margin: auto;
+        }
         button {
             text-align: center;
             display: inline-block;
-            width: 64px;
-            height: 64px;
-            margin: 6px 6px;
+            width: 45px;
+            height: 45px;
+            margin: 5px 5px;
             padding: 0;
             background: #333;
             color: #eee;
@@ -91,12 +99,17 @@
             border: 2px solid #333;
             border-radius: 50%;
             cursor: pointer;
+            outline: none;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            -webkit-tap-highlight-color: transparent;
         }
         button:active {
             background: #555;
         }
         button .mega-octicon {
-            width: 64px;
+            width: 45px;
             text-align: center;
             padding: 0;
             margin: 0;
@@ -114,6 +127,63 @@
         .keyboard:active {
              background: #222;           
         }
+        #touchcontrols{
+            touch-action: auto;
+        }
+        @media (min-width: 420px) {
+            canvas {
+                width: 400px;
+            }
+        } 
+        @media (min-width: 620px) {
+            canvas {
+                width: 500px;
+            }
+        } 
+        @media (min-width: 620px) {
+            canvas {
+                width: 600px;
+            }
+            button {
+                width: 48px;
+                height: 48px;
+                margin: 6px 6px;
+            }
+            button .mega-octicon {
+                width: 48px;
+            }        
+        } 
+        @media (min-width: 720px) {
+            canvas {
+                width: 700px;
+            }
+            button {
+                width: 52px;
+                height: 52px;
+            }
+            button .mega-octicon {
+                width: 52px;
+            }
+        }
+        @media (min-width: 860px) {
+            canvas {
+                width: 800px;
+            }
+            button {
+                width: 64px;
+                height: 64px;
+                margin: 8px 8px;
+            }
+            button .mega-octicon {
+                width: 64px;
+            }
+            .buttonrow {
+                display: block;
+            }
+            #touchcontrols {
+                width: 800px;
+            }
+        }   
     </style>
     <title>Chitinous Crooks</title>
 </head>
@@ -122,7 +192,7 @@
     <a class="githublink" title="View Source on GitHub" href="https://github.com/walsh9/7drl2015"><span class="mega-octicon octicon-mark-github"></span></a>
     <div id="game"></div>
     <div id="touchcontrols" class="hidden">
-        <div class="buttonrow">
+        <span class="buttonrow">
             <button class="bh"><span class="mega-octicon octicon-arrow-left"></span></button>
             <button class="bj"><span class="mega-octicon octicon-arrow-down"></span></button>
             <button class="bk"><span class="mega-octicon octicon-arrow-up"></span></button>
@@ -131,8 +201,8 @@
             <button class="bq">?</button>
             <button class="bb">B</button>
             <button class="be">E</button>
-        </div>
-        <div class="buttonrow">
+        </span>
+        <span class="buttonrow">
             <button class="b1">1</button>
             <button class="b2">2</button>
             <button class="b3">3</button>
@@ -142,8 +212,8 @@
             <button class="b7">7</button>
             <button class="b8">8</button>
             <button class="b9">9</button>
-        </div>
-        <p class="hint">You can also swipe left, right, up, or down to move.</p>
+        </span>
+        <p class="message">You can also swipe left, right, up, or down on the game screen to move.</p>
     </div>
     <p class="hint">Press [?] for help</p>
     <button class="keyboard"><span class="mega-octicon octicon-keyboard"></span>Show Touch Controls </button>

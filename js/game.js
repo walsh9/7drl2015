@@ -11,10 +11,6 @@ var Game =  {
             fontFamily: '"Droid Sans Mono", monospace',
         }
 
-        var hammertime = new Hammer(document.body, {domEvents: true});
-        hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL, velocity: 0.1 });
-        hammertime.get('tap').set({ interval: 0, time: 400});
-
         this._display = new ROT.Display(options);
         // Create a helper function for binding to an event
         // and making it send it to the screen
@@ -24,6 +20,14 @@ var Game =  {
                 // When an event is received, send it to the
                 // screen if there is one
                 if (game._currentScreen !== null) {
+                    // prevent events from scrolling screen
+                    if (event === 'keydown' && 
+                        (e.keyCode === ROT.VK_SPACE ||
+                         e.keyCode === ROT.VK_DOWN ||
+                         e.keyCode === ROT.VK_UP)
+                        ) {
+                        e.preventDefault();
+                    }
                     // Send the event type and data to the screen
                     game._currentScreen.handleInput(event, e);
                 }
@@ -42,6 +46,7 @@ var Game =  {
         document.querySelector('.keyboard').addEventListener('tap', function(e) {
             document.querySelector('.keyboard').className = "hidden";
             document.querySelector('#touchcontrols').className = "";
+            window.scrollTo(0,0);
         });
         document.querySelector('.bh').addEventListener('tap', function(e) {
             game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_H});
@@ -95,6 +100,21 @@ var Game =  {
             game._currentScreen.handleInput('keydown', {keyCode: ROT.VK_E});
         });
     },
+    initUI: function() {
+        var hammertime = new Hammer.Manager(document.querySelector('#game canvas'), {domEvents: true, preventDefault: true});
+        hammertime.add( new Hammer.Swipe({ event: 'swipe', direction: Hammer.DIRECTION_ALL, velocity: 0.05 }) );
+        var hammertime2 = new Hammer.Manager(document.body, {domEvents: true, preventDefault: true});
+        hammertime2.add( new Hammer.Tap({ event: 'tap', delay: 0, time: 400, threshold: 24}) );
+        // Prevent double tap causing scroll on ios safari
+        var doubleTouchStartTimestamp = 0;
+        document.body.addEventListener("touchstart", function (event) {
+            var now = +(new Date());
+            if (doubleTouchStartTimestamp + 500 > now) {
+                event.preventDefault();
+            }
+            doubleTouchStartTimestamp = now;
+        });
+    },
 	getDisplay: function() {
 		return this._display;
 	},
@@ -137,6 +157,7 @@ window.onload = function() {
         // Add the container to our HTML page
         document.getElementById('game').appendChild(Game.getDisplay().getContainer());
         // Load the start screen
+        Game.initUI();
         Game.switchScreen(Game.Screen.startScreen);
     }
 };
