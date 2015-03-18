@@ -1,7 +1,13 @@
 #Chitinous Crooks
+![screenshot](https://cloud.githubusercontent.com/assets/6074785/6702506/e2a406bc-cd02-11e4-93e7-ff5826d0a826.png)
 
 ## Play now
 http://walsh9.github.io/7drl2015/
+
+## Intro
+**Chitinous Crooks** is a roguelike game made in seven days for the 2015 [7DRL Challenge](http://www.roguebasin.com/index.php?title=Seven_Day_Roguelike_Challenge). It's a very traditional roguelike in both gameplay and aesthetics. But you have no experience levels or items to help you, just a random set of god-granted abilities. Each dungeon level, you can use up to three of these, and every time you pass a level your health is restored and you gain additional abilities to choose from.
+
+Special thanks goes to [rot.js](http://ondras.github.io/rot.js/hp/) and the [tutorial at the Coding Cookies blog](http://www.codingcookies.com/2013/04/01/building-a-roguelike-in-javascript-part-1/).
 
 ## Controls
 * Arrow keys, hjkl, or wasd to move.
