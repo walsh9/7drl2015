@@ -42,20 +42,3 @@ http://walsh9.github.io/7drl2015/
 * Bug fixing. 
 * Add touchscreen controls. 
 * Game finished around 10:40 pm.
-
-## POST 7DRL Changelog
-### 1.1
-* Add link to original 7DRL version.
-* Buff healing from 'Swell' to 4HP.
-* Increase size of 'Vortex Ward' and make it push away directly adjacent enemies.
-* Increase 'Flow Into Time' duration to 8 turns, but make player attacks do 0 damage while it's active.
-* Remove 'Overflowing'.
-* Add a message when you enter a new floor that informs player that they are healed and have new blessings.
-* Make the text 'Jewel of Zot' consistently magenta.
-* Clean up the 'look' screen.
-* Add a note to indicate that you can move by swiping on touchscreens.
-* Responsive canvas sizing for small screens.
-* Change swipe action to only work on game canvas.
-* Other touch improvements.
-* Prevent unwanted scrolling from arrow keys, spacebar, etc.
-* A few other UI tweaks.

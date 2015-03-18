@@ -116,7 +116,7 @@ Game.Tile.jewelOfZot = new Game.Tile({
     foreground: '#f0f',
     walkable: false,
     blocksLight: false,
-    description: 'The %c{#f0f}Jewel of Zot',
+    description: 'The %c{f0f}Jewel of Zot',
     action: function() {
         Game.switchScreen(Game.Screen.winScreen);
     }
