@@ -652,7 +652,7 @@ Game.Screen.helpScreen = {
         display.drawText(1, y++, 'Hints:');
         display.drawText(1, y++, '1. Find the upstairs (%c{6c9}<%c{#ccc}) on each floor.');
         display.drawText(1, y++, '2. You don\'t need to kill every enemy.');
-        display.drawText(1, y++, '3. Find the %c{f0f}Jewel of Zot%c{#ccc} (%c{f0f}*%c{#ccc}) on Level 7 to win.');
+        display.drawText(1, y++, '3. Find the %c{#f0f}Jewel of Zot%c{#ccc} (%c{#f0f}*%c{#ccc}) on Level 7 to win.');
         display.drawText(1, y++, '4. Each Blessing costs 1 favor to invoke.');
         display.drawText(1, y++, '5. Blessings are powerful, but you can only use 3 per level. Choose wisely.');
         display.drawText(1, y++, '6. Levi favors those who progress. Health and favor are restored each Level.');
