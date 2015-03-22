@@ -21,7 +21,7 @@ Special thanks goes to [rot.js](http://ondras.github.io/rot.js/hp/) and the [tut
 ## Hints
 1. Find the upstairs `<` on each floor.
 2. You don't need to kill every enemy.
-3. Find the Jewel of Zot `*` on Level 7 to 
+3. Find the Jewel of Zot `*` on Level 7 to win!
 4. Each Blessing costs 1 favor to invoke.
 5. Blessings are powerful, but you can only use 3 per level. Choose wisely.
 6. Levi favors those who progress. Health and favor are restored each level.
