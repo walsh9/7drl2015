@@ -65,6 +65,7 @@ Special thanks goes to [rot.js](http://ondras.github.io/rot.js/hp/) and the [tut
 * Other touch improvements.
 * Prevent unwanted scrolling from arrow keys, spacebar, etc.
 * A few other UI tweaks.
+
 ### 1.1.1
 * Touch buttons shouldn't fire twice on Dolphin browser anymore.
 * Game window scales wider on small screens now.
