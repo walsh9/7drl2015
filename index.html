@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" type="text/css">
     <link rel="stylesheet" href="octicons/octicons.css" type="text/css">
     <script src="js/hammer.min.js"></script>
     <script src="js/rot.min.js"></script>
+    <script src="js/preventGhostClick.js"></script>
     <script src="js/sprintf.min.js"></script>
     <script src="js/array2d.js"></script>
     <script src="js/game.js"></script>
@@ -34,7 +35,8 @@
             touch-action: auto;
         }
         canvas {
-            width: 300px;
+            width: 100%;
+            max-width: 720px;
             display: block;
             margin: auto;
             border: 1px solid #333;
@@ -132,18 +134,10 @@
         }
         @media (min-width: 420px) {
             canvas {
-                width: 400px;
+                width: 90%;
             }
         } 
         @media (min-width: 620px) {
-            canvas {
-                width: 500px;
-            }
-        } 
-        @media (min-width: 620px) {
-            canvas {
-                width: 600px;
-            }
             button {
                 width: 48px;
                 height: 48px;
@@ -154,9 +148,6 @@
             }        
         } 
         @media (min-width: 670px) {
-            canvas {
-                width: 650px;
-            }
             button {
                 width: 52px;
                 height: 52px;
@@ -166,9 +157,6 @@
             }
         }
         @media (min-width: 740px) {
-            canvas {
-                width: 720px;
-            }
             button {
                 width: 64px;
                 height: 64px;
@@ -221,7 +209,7 @@
     </div>
     <p class="hint">Press [?] for help</p>
     <button class="keyboard"><span class="mega-octicon octicon-keyboard"></span>Show Touch Controls </button>
-    <p class="message">This is version 1.1, with some bugfixes and <a href="https://github.com/walsh9/7drl2015#11">other changes</a>.</p>
+    <p class="message">This is version 1.1.1, with some bugfixes and <a href="https://github.com/walsh9/7drl2015#11">other changes</a>.</p>
     <p class="message">For the original 7DRL release, <a href="7drl/">click here</a>.</p>
 
 

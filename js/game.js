@@ -9,7 +9,7 @@ var Game =  {
             width: this._screenWidth + 20,
             height: this._screenHeight,
             fontFamily: '"Droid Sans Mono", monospace',
-        }
+        };
 
         this._display = new ROT.Display(options);
         // Create a helper function for binding to an event
@@ -26,7 +26,7 @@ var Game =  {
                          e.keyCode === ROT.VK_DOWN ||
                          e.keyCode === ROT.VK_UP)
                         ) {
-                        e.preventDefault();
+                       e.preventDefault();
                     }
                     // Send the event type and data to the screen
                     game._currentScreen.handleInput(event, e);
@@ -104,7 +104,7 @@ var Game =  {
         var hammertime = new Hammer.Manager(document.querySelector('#game canvas'), {domEvents: true, preventDefault: true});
         hammertime.add( new Hammer.Swipe({ event: 'swipe', direction: Hammer.DIRECTION_ALL, velocity: 0.05 }) );
         var hammertime2 = new Hammer.Manager(document.body, {domEvents: true, preventDefault: true});
-        hammertime2.add( new Hammer.Tap({ event: 'tap', delay: 0, time: 400, threshold: 24}) );
+        hammertime2.add( new Hammer.Tap({ event: 'tap', delay: 0, time: 400, threshold: 25}) );
         // Prevent double tap causing scroll on ios safari
         var doubleTouchStartTimestamp = 0;
         document.body.addEventListener("touchstart", function (event) {
@@ -114,6 +114,10 @@ var Game =  {
             }
             doubleTouchStartTimestamp = now;
         });
+        var buttons = document.querySelectorAll('button');
+        for (var i = 0; i < buttons.length; i++) {
+            PreventGhostClick(buttons[i]);
+        }
     },
 	getDisplay: function() {
 		return this._display;
