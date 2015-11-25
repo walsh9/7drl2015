@@ -313,16 +313,11 @@ Game.EntityMixins.BuffGetter = {
             if (this._buffs[i].type === type) {
                 this._buffs[i].duration -= 1;
                 if (this._buffs[i].duration === 0) {
-                    //hacky special cases
+                    //hacky special case
                     if (this._buffs[i].name === "Bubble Shield") {
                         this.setChar('@');
                     }
-                    if (this._buffs[i].name === "Flow Into Time") {
-                        this.removeBuffByName('Cancel damage during FIT');
-                    }
-                    if (this._buffs[i].removeMessage) {
-                        Game.sendMessage(this, this._buffs[i].removeMessage);
-                    }
+                    Game.sendMessage(this, this._buffs[i].removeMessage);
                     this._buffs.splice(i, 1);
                 };
             }
@@ -331,9 +326,7 @@ Game.EntityMixins.BuffGetter = {
     removeBuffByName: function(name) {
         for (var i = 0; i < this._buffs.length; i++) {
             if (this._buffs[i].name == name) {
-                if (this._buffs[i].removeMessage) {
-                    Game.sendMessage(this, this._buffs[i].removeMessage);
-                }
+                Game.sendMessage(this, this._buffs[i].removeMessage);
                 this._buffs.splice(i, 1);
                 return true;
             }
@@ -373,7 +366,7 @@ Game.EntityMixins.Attacker = {
         if (this.hasMixin(Game.EntityMixins.BuffGetter)) {
             modifier += this.getBuffTotal('attack');
         }
-        return Math.max(this._attackValue + modifier, 0);
+        return this._attackValue + modifier;
     },
     attack: function(target) {
         // If the target is destructible, calculate the damage
@@ -410,7 +403,7 @@ Game.EntityMixins.Attacker = {
             }
         },
         details: function() {
-            return [{key: 'Attack', value: this.getAttackValue()}];
+            return [{key: 'attack', value: this.getAttackValue()}];
         }
     }
 };
@@ -486,8 +479,8 @@ Game.EntityMixins.Destructible = {
     listeners: {
         details: function() {
             return [
-                {key: 'Defense', value: this.getDefenseValue()},
-                {key: 'HP', value: this.getHp()}
+                {key: 'defense', value: this.getDefenseValue()},
+                {key: 'hp', value: this.getHp()}
             ];
         }
     }

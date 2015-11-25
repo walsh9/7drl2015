@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" type="text/css">
     <link rel="stylesheet" href="octicons/octicons.css" type="text/css">
     <script src="js/hammer.min.js"></script>
     <script src="js/rot.min.js"></script>
-    <script src="js/preventGhostClick.js"></script>
     <script src="js/sprintf.min.js"></script>
     <script src="js/array2d.js"></script>
     <script src="js/game.js"></script>
@@ -32,31 +30,24 @@
         body {
             background: black;
             text-align: center;
-            touch-action: auto;
         }
         canvas {
-            width: 100%;
-            max-width: 720px;
-            display: block;
+            display:block;
             margin: auto;
-            border: 1px solid #333;
-            touch-action: pan-x pan-y;
-        }     
+        }
         h1 {
             color: #eee;
             font-family: "Droid Sans Mono", monospace;
             font-size: 18px;
             display: block;
             margin: auto;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .githublink {
             position: absolute;
             top: 10px;
             right: 7px;
             color: #333;
-            -webkit-transition: all 1s;
-            transition: all 1s;
         }
         .githublink:hover, .githublink:active {
             color: #fff;
@@ -67,32 +58,12 @@
             font-family: "Droid Sans Mono", monospace;
             color: #333;
         }
-        .message {
-            font-family: "Droid Sans Mono", monospace;
-            color: #555; 
-            -webkit-transition: all 0.5s;
-            transition: all 0.5s;
-        }
-        .message a {
-            color: #777;
-            text-decoration: none;
-            -webkit-transition: all 0.5s;
-            transition: all 0.5s;
-        }
-        .message a:hover {
-            background: #333;
-            -webkit-transition: all 1s;
-            transition: all 1s;
-        }
-        #touchcontrols {
-            margin: auto;
-        }
         button {
             text-align: center;
             display: inline-block;
-            width: 45px;
-            height: 45px;
-            margin: 5px 5px;
+            width: 64px;
+            height: 64px;
+            margin: 6px 6px;
             padding: 0;
             background: #333;
             color: #eee;
@@ -101,17 +72,12 @@
             border: 2px solid #333;
             border-radius: 50%;
             cursor: pointer;
-            outline: none;
-            -ms-touch-action: manipulation;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: rgba(0,0,0,0);
-            -webkit-tap-highlight-color: transparent;
         }
         button:active {
             background: #555;
         }
         button .mega-octicon {
-            width: 45px;
+            width: 64px;
             text-align: center;
             padding: 0;
             margin: 0;
@@ -129,53 +95,6 @@
         .keyboard:active {
              background: #222;           
         }
-        #touchcontrols{
-            touch-action: auto;
-        }
-        @media (min-width: 420px) {
-            canvas {
-                width: 90%;
-            }
-        } 
-        @media (min-width: 620px) {
-            button {
-                width: 48px;
-                height: 48px;
-                margin: 6px 6px;
-            }
-            button .mega-octicon {
-                width: 48px;
-            }        
-        } 
-        @media (min-width: 670px) {
-            button {
-                width: 52px;
-                height: 52px;
-            }
-            button .mega-octicon {
-                width: 52px;
-            }
-        }
-        @media (min-width: 740px) {
-            button {
-                width: 64px;
-                height: 64px;
-                margin: 8px 8px;
-            }
-            button .mega-octicon {
-                width: 64px;
-            }
-            #touchcontrols {
-                width: 720px;
-            }
-        @media (min-width: 860px) {
-            .buttonrow {
-                display: block;
-            }
-            #touchcontrols {
-                width: 800px;
-            }
-        }   
     </style>
     <title>Chitinous Crooks</title>
 </head>
@@ -184,7 +103,7 @@
     <a class="githublink" title="View Source on GitHub" href="https://github.com/walsh9/7drl2015"><span class="mega-octicon octicon-mark-github"></span></a>
     <div id="game"></div>
     <div id="touchcontrols" class="hidden">
-        <span class="buttonrow">
+        <div class="buttonrow">
             <button class="bh"><span class="mega-octicon octicon-arrow-left"></span></button>
             <button class="bj"><span class="mega-octicon octicon-arrow-down"></span></button>
             <button class="bk"><span class="mega-octicon octicon-arrow-up"></span></button>
@@ -193,8 +112,8 @@
             <button class="bq">?</button>
             <button class="bb">B</button>
             <button class="be">E</button>
-        </span>
-        <span class="buttonrow">
+        </div>
+        <div class="buttonrow">
             <button class="b1">1</button>
             <button class="b2">2</button>
             <button class="b3">3</button>
@@ -204,13 +123,10 @@
             <button class="b7">7</button>
             <button class="b8">8</button>
             <button class="b9">9</button>
-        </span>
-        <p class="message">You can also swipe left, right, up, or down on the game screen to move.</p>
+        </div>
     </div>
-    <p class="hint">Press [?] for help</p>
+    <div class="hint">Press [?] for help</div>
     <button class="keyboard"><span class="mega-octicon octicon-keyboard"></span>Show Touch Controls </button>
-    <p class="message">This is version 1.1.1, with some bugfixes and <a href="https://github.com/walsh9/7drl2015#11">other changes</a>.</p>
-    <p class="message">For the original 7DRL release, <a href="7drl/">click here</a>.</p>
 
 
 </body>

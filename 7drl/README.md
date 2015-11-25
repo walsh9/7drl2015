@@ -1,13 +1,7 @@
 #Chitinous Crooks
-![screenshot](https://cloud.githubusercontent.com/assets/6074785/6702506/e2a406bc-cd02-11e4-93e7-ff5826d0a826.png)
 
 ## Play now
 http://walsh9.github.io/7drl2015/
-
-## Intro
-**Chitinous Crooks** is a roguelike game made in seven days for the 2015 [7DRL Challenge](http://www.roguebasin.com/index.php?title=Seven_Day_Roguelike_Challenge). It's a very traditional roguelike in both gameplay and aesthetics. But you have no experience levels or items to help you, just a random set of god-granted abilities. Each dungeon level, you can use up to three of these, and every time you pass a level your health is restored and you gain additional abilities to choose from.
-
-Special thanks goes to [rot.js](http://ondras.github.io/rot.js/hp/) and the [tutorial at the Coding Cookies blog](http://www.codingcookies.com/2013/04/01/building-a-roguelike-in-javascript-part-1/).
 
 ## Controls
 * Arrow keys, hjkl, or wasd to move.
@@ -21,7 +15,7 @@ Special thanks goes to [rot.js](http://ondras.github.io/rot.js/hp/) and the [tut
 ## Hints
 1. Find the upstairs `<` on each floor.
 2. You don't need to kill every enemy.
-3. Find the Jewel of Zot `*` on Level 7 to win!
+3. Find the Orb of Zot `*` on Level 7 to 
 4. Each Blessing costs 1 favor to invoke.
 5. Blessings are powerful, but you can only use 3 per level. Choose wisely.
 6. Levi favors those who progress. Health and favor are restored each level.
@@ -48,24 +42,3 @@ Special thanks goes to [rot.js](http://ondras.github.io/rot.js/hp/) and the [tut
 * Bug fixing. 
 * Add touchscreen controls. 
 * Game finished around 10:40 pm.
-
-## POST 7DRL Changelog
-### 1.1
-* Add link to original 7DRL version.
-* Buff healing from 'Swell' to 4HP.
-* Increase size of 'Vortex Ward' and make it push away directly adjacent enemies.
-* Increase 'Flow Into Time' duration to 8 turns, but make player attacks do 0 damage while it's active.
-* Remove 'Overflowing'.
-* Add a message when you enter a new floor that informs player that they are healed and have new blessings.
-* Make the text 'Jewel of Zot' consistently magenta.
-* Clean up the 'look' screen.
-* Add a note to indicate that you can move by swiping on touchscreens.
-* Responsive canvas sizing for small screens.
-* Change swipe action to only work on game canvas.
-* Other touch improvements.
-* Prevent unwanted scrolling from arrow keys, spacebar, etc.
-* A few other UI tweaks.
-
-### 1.1.1
-* Touch buttons shouldn't fire twice on Dolphin browser anymore.
-* Game window scales wider on small screens now.

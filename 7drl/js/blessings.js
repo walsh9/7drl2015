@@ -12,10 +12,10 @@ Game.BlessingRepository.define("Coursing Power", {
 
 Game.BlessingRepository.define("Swell", {
     name: "Swell",
-    description: "Heal 4 HP.",    
+    description: "Heal 3 HP.",    
     message: "Your blood feels warm.",
     action: function(player) {
-        player.setHp(Math.min(player.getHp() + 4, player.getMaxHp()));
+        player.setHp(Math.min(player.getHp() + 3, player.getMaxHp()));
     }
 });
 
@@ -72,7 +72,7 @@ Game.BlessingRepository.define("Ebb and Flow", {
 Game.BlessingRepository.define("Guiding Tide", {
     name: "Guiding Tide",
     description: "The way forward will be revealed.",    
-    message: "A strong current is guiding you towards the %c{#f0f}Jewel of Zot",
+    message: "A strong current is guiding you towards the Jewel of Zot",
     action: function(player) {
         var map = player.getMap();
         var stairs = map.findTile('<')[0];
@@ -108,12 +108,11 @@ Game.BlessingRepository.define("Bubble Shield", {
                                 
 Game.BlessingRepository.define("Flow Into Time", {
     name: "Flow Into Time",
-    description: "Take 8 free turns, but your attack drops to 0.",    
+    description: "Take 5 free turns.",    
     message: "A swift current guides your movements.",
     action: function(player) {
         player.addAbility('speed')
-        player.addBuff('speed', 1, 8, "Flow Into Time", false, "Your speed returns to normal.");
-        player.addBuff('attack', -10, 8, "Cancel damage during FIT", false);
+        player.addBuff('speed', 1, 5, "Flow Into Time", false, "Your speed returns to normal.");   //not done     
     }
 });
 
@@ -128,29 +127,20 @@ Game.BlessingRepository.define("Thirst", {
 
 Game.BlessingRepository.define("Vortex Ward", {
     name: "Vortex Ward",
-    description: "Create a large vortex around you that enemies cannot cross. Can dig walls.",    
+    description: "Create a 3 x 3 vortex around you that enemies cannot pass. Can dig walls.",    
     message: "The waters around you swirl in arcane patterns.",
     action: function(player) {
-        var map = player.getMap();
         var x = player.getX();
         var y = player.getY();
         var tiles = Game.getNeighborPositions(x, y)
         tiles.push({x: x, y: y});
-        tiles.push({x: x - 2, y: y});
-        tiles.push({x: x + 2, y: y});
-        tiles.push({x: x, y: y - 2});
-        tiles.push({x: x, y: y + 2});
         for (var i = 0; i <  tiles.length; i++) {
             var tile = tiles[i];
-            if (map.getTile(tile.x, tile.y).isWalkable() ||
-                map.getTile(tile.x, tile.y) === Game.Tile.wallTile) { 
-                map.setTile(tile.x, tile.y, Game.Tile.vortexTile);
+            if (player.getMap().getTile(tile.x, tile.y).isWalkable() ||
+                player.getMap().getTile(tile.x, tile.y) === Game.Tile.wallTile) { 
+                player.getMap().setTile(tile.x, tile.y, Game.Tile.vortexTile);
             }
-            if (map.getEntityAt(x + 1, y)) {map.getEntityAt(x + 1, y).tryMove(x + 2, y);}
-            if (map.getEntityAt(x - 1, y)) {map.getEntityAt(x - 1, y).tryMove(x - 2, y);}
-            if (map.getEntityAt(x, y + 1)) {map.getEntityAt(x, y + 1).tryMove(x, y + 2);}
-            if (map.getEntityAt(x, y - 1)) {map.getEntityAt(x, y - 1).tryMove(x, y - 2);}
-        };
+        };       
     }
 });
 
@@ -190,6 +180,8 @@ Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Guiding Tide"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Thirst"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Thirst"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Overflowing"));
+Game.BlessingDeck.add(Game.BlessingRepository.create("Overflowing"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.add(Game.BlessingRepository.create("Storm Shield"));
 Game.BlessingDeck.shuffle()

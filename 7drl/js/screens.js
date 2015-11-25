@@ -52,6 +52,8 @@ Game.Screen.playScreen = {
         this._player.removeAbility('zapOnHit');
         this._player.removeAbility('healOnKill');
         this._player.removeBuffByName('Coursing Power');
+
+
         var newFavors = (level === 1) ? 4 : 3;
         for (var i = 0; i < newFavors; i++) {
             if (this._player.canAddBlessing) {
@@ -67,9 +69,7 @@ Game.Screen.playScreen = {
         var map = new Game.Map.Citadel(tiles, this._player, level);
         // Start the map's engine
         map.getEngine().start();
-        if (level !== 1) {
-            Game.sendMessage(this._player, "Levi heals your wounds and offers you new blessings.")
-        }
+
     },
     render: function(display) {
         // Render subscreen if there is one
@@ -130,12 +130,11 @@ Game.Screen.playScreen = {
 
         var locationLine = headColors + 'Sunken Citadel'
         var levelLine = statColors + 'Level: ' + this._level;
-        var hpLine = statColors + 'HP: ' +
+        var hpLine = statColors + 'HP:' +
             healthColors + Array(player.getHp() + 1).join('+') +
             grayColors + Array(player.getMaxHp() - player.getHp() + 1).join('-');
         var favorLine = statColors + 'Favor: ' + favorColors + Array(player.getFavor() + 1).join('* ');
         var attackColor = player.getBuffTotal('attack') > 0 ? '%c{#0cf}' : '';
-        attackColor += player.getBuffTotal('attack') < 0 ? '%c{#f00}' : '';
         var attackLine = statColors + 'Attack: ' + attackColor + player.getAttackValue();
 
         s++;
@@ -164,7 +163,7 @@ Game.Screen.playScreen = {
         for (var j = 0; j < enemies.length; j++) {
             var enemy = enemies[j];
             drawStatus(s++, '%c{' + enemy.getForeground() + '}' + enemy.getChar() + ' ' + statColors + enemy.getName());
-            drawStatus(s++, statColors + 'HP: ' + 
+            drawStatus(s++, statColors + 'HP:' + 
                 healthColors + Array(enemy.getHp() + 1).join('+') +
                 grayColors + Array(enemy.getMaxHp() - enemy.getHp() + 1).join('-'));
         }
@@ -495,10 +494,7 @@ Game.Screen.TargetBasedScreen.prototype.render = function(display) {
 
     // Render stars along the line.
     for (var i = 0, l = points.length; i < l; i++) {
-        display.drawText(points[i].x, points[i].y, '%c{#off}o');
-        if (i === points.length - 1) {
-            display.drawText(points[i].x, points[i].y, '%c{#off}O');            
-        }
+        display.drawText(points[i].x, points[i].y, '%c{magenta}*');
     }
 
     // Render the caption at the bottom.
@@ -652,7 +648,7 @@ Game.Screen.helpScreen = {
         display.drawText(1, y++, 'Hints:');
         display.drawText(1, y++, '1. Find the upstairs (%c{6c9}<%c{#ccc}) on each floor.');
         display.drawText(1, y++, '2. You don\'t need to kill every enemy.');
-        display.drawText(1, y++, '3. Find the %c{#f0f}Jewel of Zot%c{#ccc} (%c{#f0f}*%c{#ccc}) on Level 7 to win.');
+        display.drawText(1, y++, '3. Find the %c{f0f}Orb of Zot%c{#ccc} (%c{f0f}*%c{#ccc}) on Level 7 to win.');
         display.drawText(1, y++, '4. Each Blessing costs 1 favor to invoke.');
         display.drawText(1, y++, '5. Blessings are powerful, but you can only use 3 per level. Choose wisely.');
         display.drawText(1, y++, '6. Levi favors those who progress. Health and favor are restored each Level.');
